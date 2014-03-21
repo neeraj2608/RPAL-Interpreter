@@ -11,7 +11,9 @@ import java.util.List;
 public class Scanner{
   private BufferedReader buffer;
   private String extraCharRead;
-  private final List<String> reservedIdentifiers = Arrays.asList(new String[]{"let","in","fn","where","aug","or","not","gr","ge","ls","le","eq","ne","true","false","nil","dummy","rec"});
+  private final List<String> reservedIdentifiers = Arrays.asList(new String[]{"let","in","fn","where","aug","or",
+                                                                              "not","gr","ge","ls","le","eq","ne",
+                                                                              "true","false","nil","dummy","rec"});
   
   public Scanner(String inputFile) throws IOException{
     buffer = new BufferedReader(new InputStreamReader(new FileInputStream(new File(inputFile))));
