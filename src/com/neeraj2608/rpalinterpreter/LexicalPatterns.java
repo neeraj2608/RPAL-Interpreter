@@ -12,7 +12,7 @@ public class LexicalPatterns{
   public static final String punctionRegex = "[();,]";
   public static final Pattern PunctuationPattern = Pattern.compile(punctionRegex);
 
-  public static final String opSymbolChars = "+-@/~:=|!#%_{}\"*<>.&$^\\[\\]?";
+  public static final String opSymbolChars = "+-/~:=|!#%_{}\"*<>.&$^\\[\\]?@";
   public static final String opSymbolCharsToEscape = "([*<>.&$^?])";
   public static final String opSymbolRegex = "[" + escapeRegEx(opSymbolChars, opSymbolCharsToEscape) + "]";
   public static final Pattern OpSymbolPattern = Pattern.compile(opSymbolRegex);

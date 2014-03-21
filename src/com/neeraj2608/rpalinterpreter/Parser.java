@@ -29,10 +29,6 @@ public class Parser{
     if(currentToken!=null)
       throw new ParseException("Expected EOF.");
   }
-  
-  private void buildASTNode(ASTNodeType type, int treesToPop){
-    // TODO
-  }
 
   private void readNT(){
     if(null != currentToken){
@@ -52,15 +48,23 @@ public class Parser{
   }
   
   private boolean isCurrentToken(TokenType type, String value){
+    if(currentToken==null)
+      return false;
     if(currentToken.getType()!=type || !currentToken.getValue().equals(value))
       return false;
     return true;
   }
   
   private boolean isCurrentTokenType(TokenType type){
+    if(currentToken==null)
+      return false;
     if(currentToken.getType()==type)
       return true;
     return false;
+  }  
+  
+  private void buildASTNode(ASTNodeType type, int treesToPop){
+    // TODO
   }
 
   private void createTerminalASTNode(ASTNodeType type, String value){
@@ -135,20 +139,19 @@ public class Parser{
 
   private void procTA(){
     procTC(); //Ta -> Tc
-    readNT();
+    //extra readNT done in procTC()
     int treesToPop = 0;
     while(isCurrentToken(TokenType.RESERVED, "aug")){ //Ta -> Ta ’aug’ Tc => ’aug’
       readNT();
-      procTC(); //extra readNT done in procTC
+      procTC(); //extra readNT done in procTC()
       treesToPop++;
     }
     if(treesToPop>0) buildASTNode(ASTNodeType.TAU, treesToPop+1);
   }
 
   private void procTC(){
-    //procB(); //Tc -> B
-    //TODO procB()
-    readNT();
+    procB(); //Tc -> B
+    //extra readNT in procBT()
     if(isCurrentToken(TokenType.OPERATOR, "->")){ //Tc -> B '->' Tc '|' Tc => '->'
       readNT();
       procTC(); //extra readNT done in procTC
@@ -164,6 +167,64 @@ public class Parser{
    * Boolean Expressions
    *******************************/
   
+  private void procB(){
+    procBT(); //B -> Bt
+    //extra readNT in procBT()
+    while(isCurrentToken(TokenType.RESERVED, "or")){ //B -> B 'or' Bt => 'or'
+      readNT();
+      procBT();
+      buildASTNode(ASTNodeType.OR, 2);
+    }
+  }
+  
+  private void procBT(){
+    procBS(); //Bt -> Bs;
+    //extra readNT in procBS()
+    while(isCurrentToken(TokenType.OPERATOR, "&")){ //Bt -> Bt ’&’ Bs => ’&’
+      readNT();
+      procBS(); //extra readNT in procBS()
+      buildASTNode(ASTNodeType.AND, 2);
+    }
+  }
+  
+  private void procBS(){
+    if(isCurrentToken(TokenType.RESERVED, "not")){ //Bs -> ’not’ Bp => ’not’
+      readNT();
+      procBP(); //extra readNT in procBP()
+      buildASTNode(ASTNodeType.NOT, 1);
+    }
+    else
+      procBP(); //Bs -> Bp
+      //extra readNT in procBP()
+  }
+  
+  private void procBP(){
+    procA(); //Bp -> A
+    if(isCurrentToken(TokenType.RESERVED,"gr")||isCurrentToken(TokenType.OPERATOR,">")){ //Bp -> A(’gr’ | ’>’ ) A => 'gr'
+      procA(); //extra readNT in procA()
+      buildASTNode(ASTNodeType.GR, 2);
+    }
+    else if(isCurrentToken(TokenType.RESERVED,"ge")||isCurrentToken(TokenType.OPERATOR,">=")){ //Bp -> A (’ge’ | ’>=’) A => ’ge’
+      procA(); //extra readNT in procA()
+      buildASTNode(ASTNodeType.GE, 2);
+    }
+    else if(isCurrentToken(TokenType.RESERVED,"ls")||isCurrentToken(TokenType.OPERATOR,"<")){ //Bp -> A (’ls’ | ’<’ ) A => ’ls’
+      procA(); //extra readNT in procA()
+      buildASTNode(ASTNodeType.GE, 2);
+    }
+    else if(isCurrentToken(TokenType.RESERVED,"le")||isCurrentToken(TokenType.OPERATOR,"<=")){ //Bp -> A (’le’ | ’<=’) A => ’le’
+      procA(); //extra readNT in procA()
+      buildASTNode(ASTNodeType.GE, 2);
+    }
+    else if(isCurrentToken(TokenType.RESERVED,"eq")){ //Bp -> A ’eq’ A => ’eq’
+      procA(); //extra readNT in procA()
+      buildASTNode(ASTNodeType.EQ, 2);
+    }
+    else if(isCurrentToken(TokenType.RESERVED,"ne")){ //Bp -> A ’ne’ A => ’ne’
+      procA(); //extra readNT in procA()
+      buildASTNode(ASTNodeType.NE, 2);
+    }
+  }
   
   
   /******************************
@@ -269,7 +330,7 @@ public class Parser{
        isCurrentTokenType(TokenType.STRING)){ //R-> '<STRING>'
       readNT();
     }
-    if(isCurrentToken(TokenType.RESERVED, "true")){ //R -> 'true' => 'true'
+    else if(isCurrentToken(TokenType.RESERVED, "true")){ //R -> 'true' => 'true'
       createTerminalASTNode(ASTNodeType.TRUE, "");
       readNT();
     }
