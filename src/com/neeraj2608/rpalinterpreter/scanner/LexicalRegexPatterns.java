@@ -1,4 +1,4 @@
-package com.neeraj2608.rpalinterpreter;
+package com.neeraj2608.rpalinterpreter.scanner;
 
 import java.util.regex.Pattern;
 
@@ -7,7 +7,7 @@ import java.util.regex.Pattern;
  * tokenize the input.
  * @author Raj
  */
-public class LexicalPatterns{
+public class LexicalRegexPatterns{
   public static final Pattern LetterPattern = Pattern.compile("[a-zA-Z]");
   
   public static final Pattern IdentifierPattern = Pattern.compile("[a-zA-Z\\d_]");

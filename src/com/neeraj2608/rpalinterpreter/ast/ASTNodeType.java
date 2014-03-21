@@ -1,4 +1,4 @@
-package com.neeraj2608.rpalinterpreter;
+package com.neeraj2608.rpalinterpreter.ast;
 
 public enum ASTNodeType{
   //General

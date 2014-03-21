@@ -2,6 +2,10 @@ package com.neeraj2608.rpalinterpreter;
 
 import java.io.IOException;
 
+import com.neeraj2608.rpalinterpreter.ast.AST;
+import com.neeraj2608.rpalinterpreter.parser.Parser;
+import com.neeraj2608.rpalinterpreter.scanner.Scanner;
+
 /**
  * Main driver class.
  * @author Raj

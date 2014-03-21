@@ -1,4 +1,4 @@
-package com.neeraj2608.rpalinterpreter;
+package com.neeraj2608.rpalinterpreter.ast;
 
 /*
  * Abstract Syntax Tree: The nodes use a first-child

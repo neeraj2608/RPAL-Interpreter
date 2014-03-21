@@ -1,4 +1,4 @@
-package com.neeraj2608.rpalinterpreter;
+package com.neeraj2608.rpalinterpreter.scanner;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -60,22 +60,22 @@ public class Scanner{
    */
   private Token buildToken(String currentChar){
     Token nextToken = null;
-    if(LexicalPatterns.LetterPattern.matcher(currentChar).matches()){
+    if(LexicalRegexPatterns.LetterPattern.matcher(currentChar).matches()){
       nextToken = buildIdentifierToken(currentChar);
     }
-    else if(LexicalPatterns.DigitPattern.matcher(currentChar).matches()){
+    else if(LexicalRegexPatterns.DigitPattern.matcher(currentChar).matches()){
       nextToken = buildIntegerToken(currentChar);
     }
-    else if(LexicalPatterns.OpSymbolPattern.matcher(currentChar).matches()){ //comment tokens are also entered from here
+    else if(LexicalRegexPatterns.OpSymbolPattern.matcher(currentChar).matches()){ //comment tokens are also entered from here
       nextToken = buildOperatorToken(currentChar);
     }
     else if(currentChar.equals("\'")){
       nextToken = buildStringToken(currentChar);
     }
-    else if(LexicalPatterns.SpacePattern.matcher(currentChar).matches()){
+    else if(LexicalRegexPatterns.SpacePattern.matcher(currentChar).matches()){
       nextToken = buildSpaceToken(currentChar);
     }
-    else if(LexicalPatterns.PunctuationPattern.matcher(currentChar).matches()){
+    else if(LexicalRegexPatterns.PunctuationPattern.matcher(currentChar).matches()){
       nextToken = buildPunctuationPattern(currentChar);
     }
     return nextToken;
@@ -94,7 +94,7 @@ public class Scanner{
     
     String nextChar = readNextChar();
     while(nextChar!=null){ //null indicates the file ended
-      if(LexicalPatterns.IdentifierPattern.matcher(nextChar).matches()){
+      if(LexicalRegexPatterns.IdentifierPattern.matcher(nextChar).matches()){
         sBuilder.append(nextChar);
         nextChar = readNextChar();
       }
@@ -125,7 +125,7 @@ public class Scanner{
     
     String nextChar = readNextChar();
     while(nextChar!=null){ //null indicates the file ended
-      if(LexicalPatterns.DigitPattern.matcher(nextChar).matches()){
+      if(LexicalRegexPatterns.DigitPattern.matcher(nextChar).matches()){
         sBuilder.append(nextChar);
         nextChar = readNextChar();
       }
@@ -156,7 +156,7 @@ public class Scanner{
       return buildCommentToken(currentChar+nextChar);
     
     while(nextChar!=null){ //null indicates the file ended
-      if(LexicalPatterns.OpSymbolPattern.matcher(nextChar).matches()){
+      if(LexicalRegexPatterns.OpSymbolPattern.matcher(nextChar).matches()){
         sBuilder.append(nextChar);
         nextChar = readNextChar();
       }
@@ -193,7 +193,7 @@ public class Scanner{
         else //this represents an error condition and hence we're not concerned with setting extraCharRead
           break;
       }
-      else if(LexicalPatterns.StringPattern.matcher(nextChar).matches()){ //match Letter | Digit | Operator_symbol
+      else if(LexicalRegexPatterns.StringPattern.matcher(nextChar).matches()){ //match Letter | Digit | Operator_symbol
         sBuilder.append(nextChar);
         nextChar = readNextChar();
       }
@@ -214,7 +214,7 @@ public class Scanner{
     
     String nextChar = readNextChar();
     while(nextChar!=null){ //null indicates the file ended
-      if(LexicalPatterns.SpacePattern.matcher(nextChar).matches()){
+      if(LexicalRegexPatterns.SpacePattern.matcher(nextChar).matches()){
         sBuilder.append(nextChar);
         nextChar = readNextChar();
       }
@@ -235,7 +235,7 @@ public class Scanner{
     
     String nextChar = readNextChar();
     while(nextChar!=null){ //null indicates the file ended
-      if(LexicalPatterns.CommentPattern.matcher(nextChar).matches()){
+      if(LexicalRegexPatterns.CommentPattern.matcher(nextChar).matches()){
         sBuilder.append(nextChar);
         nextChar = readNextChar();
       }
