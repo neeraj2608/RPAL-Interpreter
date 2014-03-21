@@ -1,20 +1,21 @@
 package com.neeraj2608.rpalinterpreter;
 
 public class ASTNode{
-  private TokenType token;
+  private ASTNodeType type;
+  private String value;
   private ASTNode child;
   private ASTNode sibling;
   
   public String getName(){
-    return token.name();
+    return type.name();
   }
 
-  public TokenType getToken(){
-    return token;
+  public ASTNodeType getType(){
+    return type;
   }
 
-  public void setToken(TokenType token){
-    this.token = token;
+  public void setType(ASTNodeType type){
+    this.type = type;
   }
 
   public ASTNode getChild(){
@@ -31,5 +32,13 @@ public class ASTNode{
 
   public void setSibling(ASTNode sibling){
     this.sibling = sibling;
+  }
+
+  public String getValue(){
+    return value;
+  }
+
+  public void setValue(String value){
+    this.value = value;
   }
 }
