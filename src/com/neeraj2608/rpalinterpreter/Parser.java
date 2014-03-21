@@ -65,7 +65,16 @@ public class Parser{
   }
   
   private void buildASTNode(ASTNodeType type, int treesToPop){
-    // TODO
+    ASTNode node = new ASTNode();
+    node.setType(type);
+    while(treesToPop>0){
+      ASTNode child = stack.pop();
+      if(node.getChild()!=null)
+        child.setSibling(node.getChild());
+      node.setChild(child);
+      treesToPop--;
+    }
+    stack.push(node);
   }
 
   private void createTerminalASTNode(ASTNodeType type, String value){
@@ -318,7 +327,6 @@ public class Parser{
         isCurrentToken(TokenType.RESERVED, "nil")||
         isCurrentToken(TokenType.RESERVED, "dummy")||
         isCurrentTokenType(TokenType.L_PAREN)){ //R -> R Rn => 'gamma'
-      readNT();
       procRN(); //extra readNT in procRN()
       treesToPop++;
     }
@@ -345,6 +353,7 @@ public class Parser{
       readNT();
     }
     else if(isCurrentTokenType(TokenType.L_PAREN)){
+      readNT();
       procE(); //extra readNT in procE()
       if(!isCurrentTokenType(TokenType.R_PAREN))
         throw new ParseException("RN: ')' expected");

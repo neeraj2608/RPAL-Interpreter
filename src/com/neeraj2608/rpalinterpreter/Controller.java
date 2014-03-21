@@ -11,11 +11,11 @@ public class Controller{
   public static void main(String[] args){
     String fileName = "test-input/test.txt";
     printListing(fileName);
-    AST ast = buildAST(fileName, true);
+    buildAST(fileName, true);
   }
 
   private static void printListing(String fileName){
-    // TODO Auto-generated method stub
+    // TODO
   }
 
   private static AST buildAST(String fileName, boolean printOutput){
@@ -24,7 +24,7 @@ public class Controller{
       Scanner scanner = new Scanner(fileName);
       Parser parser = new Parser(scanner);
       ast = parser.buildAST();
-      //ast.print();
+      ast.print();
     }catch(IOException e){
       System.out.println("ERROR: Could not read from file: " + fileName);
     }

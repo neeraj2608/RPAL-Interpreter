@@ -15,6 +15,26 @@ public class AST{
    * Prints the tree nodes in pre-order fashion.
    */
   public void print(){
+    preOrderPrint(root,"");
+  }
+
+  private void preOrderPrint(ASTNode node, String printPrefix){
+    if(node==null)
+      return;
     
+    printASTNodeDetails(node, printPrefix);
+    preOrderPrint(node.getChild(),printPrefix+".");
+    preOrderPrint(node.getSibling(),printPrefix);
+  }
+
+  private void printASTNodeDetails(ASTNode node, String printPrefix){
+    if(node.getType() == ASTNodeType.IDENTIFIER ||
+       node.getType() == ASTNodeType.INTEGER ||
+       node.getType() == ASTNodeType.STRING){
+      System.out.printf(printPrefix+node.getType().getPrintName()+"\n",node.getValue());
+    }
+    else{
+      System.out.println(printPrefix+node.getType().getPrintName());
+    }
   }
 }

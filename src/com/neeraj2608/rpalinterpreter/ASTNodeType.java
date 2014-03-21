@@ -2,9 +2,9 @@ package com.neeraj2608.rpalinterpreter;
 
 public enum ASTNodeType{
   //General
-  IDENTIFIER("<INT:>"),
-  STRING("<STR:>"),
-  INTEGER("<INT:>"),
+  IDENTIFIER("<ID:%s>"),
+  STRING("<STR:%s>"),
+  INTEGER("<INT:%s>"),
   
   //Expressions
   LET("let"),
@@ -60,5 +60,9 @@ public enum ASTNodeType{
   
   private ASTNodeType(String name){
     printName = name;
+  }
+
+  public String getPrintName(){
+    return printName;
   }
 }
