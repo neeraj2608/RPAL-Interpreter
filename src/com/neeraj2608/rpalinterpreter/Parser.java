@@ -3,9 +3,9 @@ package com.neeraj2608.rpalinterpreter;
 import java.util.Stack;
 
 /**
- * Parser.
- * currentToken is assumed to have been loaded with the correct token BEFORE a given procedure is called.
- * "correct" = the token AFTER the last token processed by the previous procedure.
+ * Parser: Recursive descent parser that complies with RPAL's phrase structure grammar.
+ * This class does all the heavy lifting. It gets input from the scanner, and builds the
+ * abstract syntax tree.
  * @author Raj
  */
 public class Parser{
@@ -20,7 +20,8 @@ public class Parser{
   
   public AST buildAST(){
     startParse();
-    return null; //TODO
+    //TODO: need guards here??
+    return new AST(stack.pop());
   }
 
   public void startParse(){
@@ -61,7 +62,7 @@ public class Parser{
     if(currentToken.getType()==type)
       return true;
     return false;
-  }  
+  }
   
   private void buildASTNode(ASTNodeType type, int treesToPop){
     // TODO
@@ -80,6 +81,7 @@ public class Parser{
   
   private void procE(){
     if(isCurrentToken(TokenType.RESERVED, "let")){ //E -> ’let’ D ’in’ E => 'let'
+      readNT();
       procD();
       if(!isCurrentToken(TokenType.RESERVED, "in"))
         throw new ParseException("E:  'in' expected");
@@ -419,18 +421,22 @@ public class Parser{
       }
       else{ //Db -> ’<IDENTIFIER>’ Vb+ ’=’ E => 'fcn_form'
         int treesToPop = 0;
-        if(!isCurrentTokenType(TokenType.IDENTIFIER) && !isCurrentTokenType(TokenType.L_PAREN))
-          throw new ParseException("E:  'Vb' expected");
-        else{
-          do{
-            procVB(); //extra readNT in procVB()
-            treesToPop++;
-          }while(isCurrentTokenType(TokenType.IDENTIFIER)||isCurrentTokenType(TokenType.L_PAREN));
+        
+        while(isCurrentTokenType(TokenType.IDENTIFIER) || isCurrentTokenType(TokenType.L_PAREN)){
+          procVB(); //extra readNT in procVB()
+          treesToPop++;
         }
+        
+        if(treesToPop==0)
+          throw new ParseException("E: at least one 'Vb' expected");
+        
         if(!isCurrentToken(TokenType.OPERATOR, "="))
-          throw new ParseException("DB: '=' expected");
+          throw new ParseException("DB: = expected.");
+        
+        readNT();
         procE(); //extra readNT in procE()
-        buildASTNode(ASTNodeType.FCNFORM, treesToPop+2); //+1 for the last E and +1 for the first identifier
+        
+        buildASTNode(ASTNodeType.FCNFORM, treesToPop+1); //+1 for the last E
       }
     }
   }

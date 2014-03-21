@@ -1,5 +1,9 @@
 package com.neeraj2608.rpalinterpreter;
 
+/**
+ * Abstract Syntax Tree node.
+ * @author Raj
+ */
 public class ASTNode{
   private ASTNodeType type;
   private String value;

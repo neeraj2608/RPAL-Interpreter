@@ -2,6 +2,10 @@ package com.neeraj2608.rpalinterpreter;
 
 import java.io.IOException;
 
+/**
+ * Main driver class.
+ * @author Raj
+ */
 public class Controller{
 
   public static void main(String[] args){

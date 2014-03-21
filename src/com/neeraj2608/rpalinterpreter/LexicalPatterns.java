@@ -2,6 +2,11 @@ package com.neeraj2608.rpalinterpreter;
 
 import java.util.regex.Pattern;
 
+/**
+ * Regex matchers that comply with RPAL's lexical grammar. Used by the scanner to
+ * tokenize the input.
+ * @author Raj
+ */
 public class LexicalPatterns{
   public static final Pattern LetterPattern = Pattern.compile("[a-zA-Z]");
   
