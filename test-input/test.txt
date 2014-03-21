@@ -1,1 +1,1 @@
-let f x = x + 1 in Print (f 2)
+Print ((1,2) aug 1)

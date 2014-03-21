@@ -157,7 +157,7 @@ public class Parser{
       procTC(); //extra readNT done in procTC()
       treesToPop++;
     }
-    if(treesToPop>0) buildASTNode(ASTNodeType.TAU, treesToPop+1);
+    if(treesToPop>0) buildASTNode(ASTNodeType.AUG, treesToPop+1);
   }
 
   private void procTC(){
@@ -212,26 +212,32 @@ public class Parser{
   private void procBP(){
     procA(); //Bp -> A
     if(isCurrentToken(TokenType.RESERVED,"gr")||isCurrentToken(TokenType.OPERATOR,">")){ //Bp -> A(’gr’ | ’>’ ) A => 'gr'
+      readNT();
       procA(); //extra readNT in procA()
       buildASTNode(ASTNodeType.GR, 2);
     }
     else if(isCurrentToken(TokenType.RESERVED,"ge")||isCurrentToken(TokenType.OPERATOR,">=")){ //Bp -> A (’ge’ | ’>=’) A => ’ge’
+      readNT();
       procA(); //extra readNT in procA()
       buildASTNode(ASTNodeType.GE, 2);
     }
     else if(isCurrentToken(TokenType.RESERVED,"ls")||isCurrentToken(TokenType.OPERATOR,"<")){ //Bp -> A (’ls’ | ’<’ ) A => ’ls’
+      readNT();
       procA(); //extra readNT in procA()
       buildASTNode(ASTNodeType.GE, 2);
     }
     else if(isCurrentToken(TokenType.RESERVED,"le")||isCurrentToken(TokenType.OPERATOR,"<=")){ //Bp -> A (’le’ | ’<=’) A => ’le’
+      readNT();
       procA(); //extra readNT in procA()
       buildASTNode(ASTNodeType.GE, 2);
     }
     else if(isCurrentToken(TokenType.RESERVED,"eq")){ //Bp -> A ’eq’ A => ’eq’
+      readNT();
       procA(); //extra readNT in procA()
       buildASTNode(ASTNodeType.EQ, 2);
     }
     else if(isCurrentToken(TokenType.RESERVED,"ne")){ //Bp -> A ’ne’ A => ’ne’
+      readNT();
       procA(); //extra readNT in procA()
       buildASTNode(ASTNodeType.NE, 2);
     }
@@ -256,7 +262,7 @@ public class Parser{
       procAT(); //extra readNT in procAT()
     
     boolean plus = true;
-    while(isCurrentToken(TokenType.OPERATOR, "+")||isCurrentToken(TokenType.OPERATOR, "+")){
+    while(isCurrentToken(TokenType.OPERATOR, "+")||isCurrentToken(TokenType.OPERATOR, "-")){
       if(currentToken.getValue().equals("+"))
         plus = true;
       else if(currentToken.getValue().equals("-"))
@@ -445,7 +451,7 @@ public class Parser{
         readNT();
         procE(); //extra readNT in procE()
         
-        buildASTNode(ASTNodeType.FCNFORM, treesToPop+1); //+1 for the last E
+        buildASTNode(ASTNodeType.FCNFORM, treesToPop+2); //+1 for the last E and +1 for the first identifier
       }
     }
   }
@@ -478,17 +484,15 @@ public class Parser{
       throw new ParseException("VL: Identifier expected");
     else{
       readNT();
-      if(isCurrentToken(TokenType.OPERATOR, ",")){ //Vl -> ’<IDENTIFIER>’ list ’,’ => ','?
-        int treesToPop = 0;
-        do{
-          treesToPop++;
-          readNT();
-          if(!isCurrentTokenType(TokenType.IDENTIFIER))
-            throw new ParseException("VL: Identifier expected");
-          readNT();
-        } while(isCurrentToken(TokenType.OPERATOR, ","));
-        buildASTNode(ASTNodeType.COMMA, treesToPop+1);
+      int treesToPop = 0;
+      while(isCurrentToken(TokenType.OPERATOR, ",")){ //Vl -> ’<IDENTIFIER>’ list ’,’ => ','?
+        readNT();
+        if(!isCurrentTokenType(TokenType.IDENTIFIER))
+          throw new ParseException("VL: Identifier expected");
+        readNT();
+        treesToPop++;
       }
+      if(treesToPop > 0) buildASTNode(ASTNodeType.COMMA, treesToPop+1); //+1 for the first identifier
     }
   }
 
