@@ -96,7 +96,7 @@ public class Parser{
    *******************************/
   
   private void procE(){
-    if(isCurrentToken(TokenType.RESERVED, "let")){ //E -> ’let’ D ’in’ E => 'let'
+    if(isCurrentToken(TokenType.RESERVED, "let")){ //E -> 'let' D 'in' E => 'let'
       readNT();
       procD();
       if(!isCurrentToken(TokenType.RESERVED, "in"))
@@ -105,7 +105,7 @@ public class Parser{
       procE(); //extra readNT in procE()
       buildASTNode(ASTNodeType.LET, 2);
     }
-    else if(isCurrentToken(TokenType.RESERVED, "fn")){ //E -> ’fn’ Vb+ ’.’ E => ’lambda’
+    else if(isCurrentToken(TokenType.RESERVED, "fn")){ //E -> 'fn' Vb+ '.' E => 'lambda'
       int treesToPop = 0;
       
       readNT();
@@ -147,7 +147,7 @@ public class Parser{
     procTA(); //T -> Ta
     //extra readToken() in procTA()
     int treesToPop = 0;
-    while(isCurrentToken(TokenType.OPERATOR, ",")){ //T -> Ta (’,’ Ta )+ => ’tau’
+    while(isCurrentToken(TokenType.OPERATOR, ",")){ //T -> Ta (',' Ta )+ => 'tau'
       readNT();
       procTA(); //extra readToken() done in procTA()
       treesToPop++;
@@ -159,7 +159,7 @@ public class Parser{
     procTC(); //Ta -> Tc
     //extra readNT done in procTC()
     int treesToPop = 0;
-    while(isCurrentToken(TokenType.RESERVED, "aug")){ //Ta -> Ta ’aug’ Tc => ’aug’
+    while(isCurrentToken(TokenType.RESERVED, "aug")){ //Ta -> Ta 'aug' Tc => 'aug'
       readNT();
       procTC(); //extra readNT done in procTC()
       treesToPop++;
@@ -198,7 +198,7 @@ public class Parser{
   private void procBT(){
     procBS(); //Bt -> Bs;
     //extra readNT in procBS()
-    while(isCurrentToken(TokenType.OPERATOR, "&")){ //Bt -> Bt ’&’ Bs => ’&’
+    while(isCurrentToken(TokenType.OPERATOR, "&")){ //Bt -> Bt '&' Bs => '&'
       readNT();
       procBS(); //extra readNT in procBS()
       buildASTNode(ASTNodeType.AND, 2);
@@ -206,7 +206,7 @@ public class Parser{
   }
   
   private void procBS(){
-    if(isCurrentToken(TokenType.RESERVED, "not")){ //Bs -> ’not’ Bp => ’not’
+    if(isCurrentToken(TokenType.RESERVED, "not")){ //Bs -> 'not' Bp => 'not'
       readNT();
       procBP(); //extra readNT in procBP()
       buildASTNode(ASTNodeType.NOT, 1);
@@ -218,32 +218,32 @@ public class Parser{
   
   private void procBP(){
     procA(); //Bp -> A
-    if(isCurrentToken(TokenType.RESERVED,"gr")||isCurrentToken(TokenType.OPERATOR,">")){ //Bp -> A(’gr’ | ’>’ ) A => 'gr'
+    if(isCurrentToken(TokenType.RESERVED,"gr")||isCurrentToken(TokenType.OPERATOR,">")){ //Bp -> A('gr' | '>' ) A => 'gr'
       readNT();
       procA(); //extra readNT in procA()
       buildASTNode(ASTNodeType.GR, 2);
     }
-    else if(isCurrentToken(TokenType.RESERVED,"ge")||isCurrentToken(TokenType.OPERATOR,">=")){ //Bp -> A (’ge’ | ’>=’) A => ’ge’
+    else if(isCurrentToken(TokenType.RESERVED,"ge")||isCurrentToken(TokenType.OPERATOR,">=")){ //Bp -> A ('ge' | '>=') A => 'ge'
       readNT();
       procA(); //extra readNT in procA()
       buildASTNode(ASTNodeType.GE, 2);
     }
-    else if(isCurrentToken(TokenType.RESERVED,"ls")||isCurrentToken(TokenType.OPERATOR,"<")){ //Bp -> A (’ls’ | ’<’ ) A => ’ls’
+    else if(isCurrentToken(TokenType.RESERVED,"ls")||isCurrentToken(TokenType.OPERATOR,"<")){ //Bp -> A ('ls' | '<' ) A => 'ls'
       readNT();
       procA(); //extra readNT in procA()
       buildASTNode(ASTNodeType.GE, 2);
     }
-    else if(isCurrentToken(TokenType.RESERVED,"le")||isCurrentToken(TokenType.OPERATOR,"<=")){ //Bp -> A (’le’ | ’<=’) A => ’le’
+    else if(isCurrentToken(TokenType.RESERVED,"le")||isCurrentToken(TokenType.OPERATOR,"<=")){ //Bp -> A ('le' | '<=') A => 'le'
       readNT();
       procA(); //extra readNT in procA()
       buildASTNode(ASTNodeType.GE, 2);
     }
-    else if(isCurrentToken(TokenType.RESERVED,"eq")){ //Bp -> A ’eq’ A => ’eq’
+    else if(isCurrentToken(TokenType.RESERVED,"eq")){ //Bp -> A 'eq' A => 'eq'
       readNT();
       procA(); //extra readNT in procA()
       buildASTNode(ASTNodeType.EQ, 2);
     }
-    else if(isCurrentToken(TokenType.RESERVED,"ne")){ //Bp -> A ’ne’ A => ’ne’
+    else if(isCurrentToken(TokenType.RESERVED,"ne")){ //Bp -> A 'ne' A => 'ne'
       readNT();
       procA(); //extra readNT in procA()
       buildASTNode(ASTNodeType.NE, 2);
@@ -392,7 +392,7 @@ public class Parser{
   private void procDA(){
     procDR(); //Da -> Dr
     //extra readToken() in procDR()
-    if(isCurrentToken(TokenType.RESERVED, "and")){ //Da -> Dr ( ’and’ Dr )+ => 'and'
+    if(isCurrentToken(TokenType.RESERVED, "and")){ //Da -> Dr ( 'and' Dr )+ => 'and'
       int treesToPop = 0;
       do{
         readNT();
@@ -415,7 +415,7 @@ public class Parser{
   }
   
   private void procDB(){
-    if(isCurrentTokenType(TokenType.L_PAREN)){ //Db -> ’(’ D ’)’
+    if(isCurrentTokenType(TokenType.L_PAREN)){ //Db -> '(' D ')'
       procD();
       readNT();
       if(!isCurrentTokenType(TokenType.R_PAREN))
@@ -424,7 +424,7 @@ public class Parser{
     }
     else if(isCurrentTokenType(TokenType.IDENTIFIER)){
       readNT();
-      if(isCurrentToken(TokenType.OPERATOR, ",")){ //Db -> Vl ’=’ E => '='
+      if(isCurrentToken(TokenType.OPERATOR, ",")){ //Db -> Vl '=' E => '='
         readNT();
         procVL(); //extra readNT in procVB()
         //VL makes its COMMA nodes for all the tokens EXCEPT the ones
@@ -438,7 +438,7 @@ public class Parser{
         procE(); //extra readNT in procE()
         buildASTNode(ASTNodeType.EQUAL, 2);
       }
-      else{ //Db -> ’<IDENTIFIER>’ Vb+ ’=’ E => 'fcn_form'
+      else{ //Db -> '<IDENTIFIER>' Vb+ '=' E => 'fcn_form'
         int treesToPop = 0;
         
         while(isCurrentTokenType(TokenType.IDENTIFIER) || isCurrentTokenType(TokenType.L_PAREN)){
@@ -470,11 +470,11 @@ public class Parser{
     }
     else if(isCurrentTokenType(TokenType.L_PAREN)){
       readNT();
-      if(isCurrentTokenType(TokenType.R_PAREN)){ //Vb -> ’(’ ’)’
+      if(isCurrentTokenType(TokenType.R_PAREN)){ //Vb -> '(' ')'
         createTerminalASTNode(ASTNodeType.PAREN, "");
         readNT();
       }
-      else{ //Vb -> ’(’ Vl ’)’
+      else{ //Vb -> '(' Vl ')'
         procVL(); //extra readNT in procVB()
         if(!isCurrentTokenType(TokenType.R_PAREN))
           throw new ParseException("VB: ')' expected");
@@ -489,7 +489,7 @@ public class Parser{
     else{
       readNT();
       int treesToPop = 0;
-      while(isCurrentToken(TokenType.OPERATOR, ",")){ //Vl -> ’<IDENTIFIER>’ list ’,’ => ','?
+      while(isCurrentToken(TokenType.OPERATOR, ",")){ //Vl -> '<IDENTIFIER>' list ',' => ','?
         readNT();
         if(!isCurrentTokenType(TokenType.IDENTIFIER))
           throw new ParseException("VL: Identifier expected");

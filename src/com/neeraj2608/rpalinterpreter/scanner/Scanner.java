@@ -172,7 +172,7 @@ public class Scanner{
 
   /**
    * Builds string token.
-   * String -> ’’’’ (’\’ ’t’ | ’\’ ’n’ | ’\’ ’\’ | ’\’ ’’’’ |’(’ | ’)’ | ’;’ | ’,’ |’’ |Letter | Digit | Operator_symbol )* ’’’’
+   * String -> '''' ('\' 't' | '\' 'n' | '\' '\' | '\' '''' |'(' | ')' | ';' | ',' |'' |Letter | Digit | Operator_symbol )* ''''
    * @param currentChar character currently being processed 
    * @return token that was built
    */
