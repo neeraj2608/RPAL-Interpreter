@@ -1,1 +1,7 @@
-Print ((1,2) aug 1)
+//reverses a tuple provided as an argument
+
+let rec f T index R = index eq 0 -> R | f T (index-1) (R aug (T index))
+within Tuple_reverse T = not Istuple T -> 'error' |
+                         Null T -> nil |
+                         f T (Order T) nil
+in Print (Tuple_reverse nil, Tuple_reverse (1,2,3), Tuple_reverse(1))

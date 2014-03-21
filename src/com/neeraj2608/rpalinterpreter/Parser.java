@@ -324,7 +324,6 @@ public class Parser{
   private void procR(){
     procRN();
     //extra readNT in procRN()
-    int treesToPop = 0;
     while(isCurrentTokenType(TokenType.INTEGER)||
         isCurrentTokenType(TokenType.STRING)|| 
         isCurrentTokenType(TokenType.IDENTIFIER)||
@@ -334,10 +333,8 @@ public class Parser{
         isCurrentToken(TokenType.RESERVED, "dummy")||
         isCurrentTokenType(TokenType.L_PAREN)){ //R -> R Rn => 'gamma'
       procRN(); //extra readNT in procRN()
-      treesToPop++;
+      buildASTNode(ASTNodeType.GAMMA, 2);
     }
-    
-    if(treesToPop > 0) buildASTNode(ASTNodeType.GAMMA, treesToPop+1);
   }
 
   private void procRN(){
