@@ -39,6 +39,9 @@ public class Parser{
   }
 
   private void readNT(){
+    do{
+      currentToken = s.readNextToken(); //load next token
+    }while(isCurrentTokenType(TokenType.DELETE));
     if(null != currentToken){
       if(currentToken.getType()==TokenType.IDENTIFIER){
         createTerminalASTNode(ASTNodeType.IDENTIFIER, currentToken.getValue());
@@ -50,9 +53,6 @@ public class Parser{
         createTerminalASTNode(ASTNodeType.STRING, currentToken.getValue());
       }
     }
-    do{
-      currentToken = s.readNextToken(); //load next token
-    }while(isCurrentTokenType(TokenType.DELETE));
   }
   
   private boolean isCurrentToken(TokenType type, String value){
@@ -71,15 +71,15 @@ public class Parser{
     return false;
   }
   
-  private void buildASTNode(ASTNodeType type, int treesToPop){
+  private void buildNAryASTNode(ASTNodeType type, int ariness){
     ASTNode node = new ASTNode();
     node.setType(type);
-    while(treesToPop>0){
+    while(ariness>0){
       ASTNode child = stack.pop();
       if(node.getChild()!=null)
         child.setSibling(node.getChild());
       node.setChild(child);
-      treesToPop--;
+      ariness--;
     }
     stack.push(node);
   }
@@ -103,7 +103,7 @@ public class Parser{
         throw new ParseException("E:  'in' expected");
       readNT();
       procE(); //extra readNT in procE()
-      buildASTNode(ASTNodeType.LET, 2);
+      buildNAryASTNode(ASTNodeType.LET, 2);
     }
     else if(isCurrentToken(TokenType.RESERVED, "fn")){ //E -> 'fn' Vb+ '.' E => 'lambda'
       int treesToPop = 0;
@@ -123,7 +123,7 @@ public class Parser{
       readNT();
       procE(); //extra readNT in procE()
       
-      buildASTNode(ASTNodeType.LAMBDA, treesToPop+1); //+1 for the last E 
+      buildNAryASTNode(ASTNodeType.LAMBDA, treesToPop+1); //+1 for the last E 
     }
     else //E -> Ew
       procEW();
@@ -135,7 +135,7 @@ public class Parser{
     if(isCurrentToken(TokenType.RESERVED, "where")){ //Ew -> T 'where' Dr => 'where'
       readNT();
       procDR(); //extra readToken() in procDR()
-      buildASTNode(ASTNodeType.WHERE, 2);
+      buildNAryASTNode(ASTNodeType.WHERE, 2);
     }
   }
   
@@ -152,19 +152,17 @@ public class Parser{
       procTA(); //extra readToken() done in procTA()
       treesToPop++;
     }
-    if(treesToPop > 0) buildASTNode(ASTNodeType.TAU, treesToPop+1);
+    if(treesToPop > 0) buildNAryASTNode(ASTNodeType.TAU, treesToPop+1);
   }
 
   private void procTA(){
     procTC(); //Ta -> Tc
     //extra readNT done in procTC()
-    int treesToPop = 0;
     while(isCurrentToken(TokenType.RESERVED, "aug")){ //Ta -> Ta 'aug' Tc => 'aug'
       readNT();
       procTC(); //extra readNT done in procTC()
-      treesToPop++;
+      buildNAryASTNode(ASTNodeType.AUG, 2);
     }
-    if(treesToPop>0) buildASTNode(ASTNodeType.AUG, treesToPop+1);
   }
 
   private void procTC(){
@@ -177,7 +175,7 @@ public class Parser{
         throw new ParseException("TC: '|' expected");
       readNT();
       procTC();  //extra readNT done in procTC
-      buildASTNode(ASTNodeType.CONDITIONAL, 3);
+      buildNAryASTNode(ASTNodeType.CONDITIONAL, 3);
     }
   }
   
@@ -191,7 +189,7 @@ public class Parser{
     while(isCurrentToken(TokenType.RESERVED, "or")){ //B -> B 'or' Bt => 'or'
       readNT();
       procBT();
-      buildASTNode(ASTNodeType.OR, 2);
+      buildNAryASTNode(ASTNodeType.OR, 2);
     }
   }
   
@@ -201,7 +199,7 @@ public class Parser{
     while(isCurrentToken(TokenType.OPERATOR, "&")){ //Bt -> Bt '&' Bs => '&'
       readNT();
       procBS(); //extra readNT in procBS()
-      buildASTNode(ASTNodeType.AND, 2);
+      buildNAryASTNode(ASTNodeType.AND, 2);
     }
   }
   
@@ -209,7 +207,7 @@ public class Parser{
     if(isCurrentToken(TokenType.RESERVED, "not")){ //Bs -> 'not' Bp => 'not'
       readNT();
       procBP(); //extra readNT in procBP()
-      buildASTNode(ASTNodeType.NOT, 1);
+      buildNAryASTNode(ASTNodeType.NOT, 1);
     }
     else
       procBP(); //Bs -> Bp
@@ -221,32 +219,32 @@ public class Parser{
     if(isCurrentToken(TokenType.RESERVED,"gr")||isCurrentToken(TokenType.OPERATOR,">")){ //Bp -> A('gr' | '>' ) A => 'gr'
       readNT();
       procA(); //extra readNT in procA()
-      buildASTNode(ASTNodeType.GR, 2);
+      buildNAryASTNode(ASTNodeType.GR, 2);
     }
     else if(isCurrentToken(TokenType.RESERVED,"ge")||isCurrentToken(TokenType.OPERATOR,">=")){ //Bp -> A ('ge' | '>=') A => 'ge'
       readNT();
       procA(); //extra readNT in procA()
-      buildASTNode(ASTNodeType.GE, 2);
+      buildNAryASTNode(ASTNodeType.GE, 2);
     }
     else if(isCurrentToken(TokenType.RESERVED,"ls")||isCurrentToken(TokenType.OPERATOR,"<")){ //Bp -> A ('ls' | '<' ) A => 'ls'
       readNT();
       procA(); //extra readNT in procA()
-      buildASTNode(ASTNodeType.GE, 2);
+      buildNAryASTNode(ASTNodeType.LS, 2);
     }
     else if(isCurrentToken(TokenType.RESERVED,"le")||isCurrentToken(TokenType.OPERATOR,"<=")){ //Bp -> A ('le' | '<=') A => 'le'
       readNT();
       procA(); //extra readNT in procA()
-      buildASTNode(ASTNodeType.GE, 2);
+      buildNAryASTNode(ASTNodeType.LE, 2);
     }
     else if(isCurrentToken(TokenType.RESERVED,"eq")){ //Bp -> A 'eq' A => 'eq'
       readNT();
       procA(); //extra readNT in procA()
-      buildASTNode(ASTNodeType.EQ, 2);
+      buildNAryASTNode(ASTNodeType.EQ, 2);
     }
     else if(isCurrentToken(TokenType.RESERVED,"ne")){ //Bp -> A 'ne' A => 'ne'
       readNT();
       procA(); //extra readNT in procA()
-      buildASTNode(ASTNodeType.NE, 2);
+      buildNAryASTNode(ASTNodeType.NE, 2);
     }
   }
   
@@ -263,7 +261,7 @@ public class Parser{
     else if(isCurrentToken(TokenType.OPERATOR, "-")){
       readNT();
       procAT(); //extra readNT in procAT()
-      buildASTNode(ASTNodeType.NEG, 1);
+      buildNAryASTNode(ASTNodeType.NEG, 1);
     }
     else
       procAT(); //extra readNT in procAT()
@@ -277,9 +275,9 @@ public class Parser{
       readNT();
       procAT(); //extra readNT in procAT()
       if(plus)
-        buildASTNode(ASTNodeType.PLUS, 2);
+        buildNAryASTNode(ASTNodeType.PLUS, 2);
       else
-        buildASTNode(ASTNodeType.MINUS, 2);
+        buildNAryASTNode(ASTNodeType.MINUS, 2);
     }
   }
   
@@ -294,9 +292,9 @@ public class Parser{
       readNT();
       procAF(); //extra readNT in procAF()
       if(mult)
-        buildASTNode(ASTNodeType.MULT, 2);
+        buildNAryASTNode(ASTNodeType.MULT, 2);
       else
-        buildASTNode(ASTNodeType.DIV, 2);
+        buildNAryASTNode(ASTNodeType.DIV, 2);
     }
   }
   
@@ -305,23 +303,21 @@ public class Parser{
     if(isCurrentToken(TokenType.OPERATOR, "**")){
       readNT();
       procAF();
-      buildASTNode(ASTNodeType.EXP, 2);
+      buildNAryASTNode(ASTNodeType.EXP, 2);
     }
   }
   
   
   private void procAP(){
     procR(); //extra readNT in procR()
-    int treesToPop = 0;
     while(isCurrentToken(TokenType.OPERATOR, "@")){
       readNT();
       if(!isCurrentTokenType(TokenType.IDENTIFIER))
         throw new ParseException("AP: expected Identifier");
       readNT();
       procR(); //extra readNT in procR()
-      treesToPop++;
+      buildNAryASTNode(ASTNodeType.AT, 3);
     }
-    if(treesToPop > 0) buildASTNode(ASTNodeType.AT, treesToPop+1);
   }
   
   /******************************
@@ -329,8 +325,8 @@ public class Parser{
    *******************************/
   
   private void procR(){
-    procRN();
-    //extra readNT in procRN()
+    procRN(); //NO extra readNT in procRN(). See while loop below for reason.
+    readNT();
     while(isCurrentTokenType(TokenType.INTEGER)||
         isCurrentTokenType(TokenType.STRING)|| 
         isCurrentTokenType(TokenType.IDENTIFIER)||
@@ -339,39 +335,39 @@ public class Parser{
         isCurrentToken(TokenType.RESERVED, "nil")||
         isCurrentToken(TokenType.RESERVED, "dummy")||
         isCurrentTokenType(TokenType.L_PAREN)){ //R -> R Rn => 'gamma'
-      procRN(); //extra readNT in procRN()
-      buildASTNode(ASTNodeType.GAMMA, 2);
+      procRN(); //NO extra readNT in procRN(). This is important because if we do an extra readNT in procRN and currentToken happens to
+                //be an INTEGER, IDENTIFIER, or STRING, it will get pushed on the stack. Then, the GAMMA node that we build will have the
+                //wrong kids
+      buildNAryASTNode(ASTNodeType.GAMMA, 2);
+      readNT();
     }
   }
 
+  /**
+   * NOTE: NO extra readNT in procRN. See comments in {@link #procR()} for explanation.
+   */
   private void procRN(){
     if(isCurrentTokenType(TokenType.IDENTIFIER)|| //R -> '<IDENTIFIER>'
        isCurrentTokenType(TokenType.INTEGER)|| //R -> '<INTEGER>' 
        isCurrentTokenType(TokenType.STRING)){ //R-> '<STRING>'
-      readNT();
     }
     else if(isCurrentToken(TokenType.RESERVED, "true")){ //R -> 'true' => 'true'
       createTerminalASTNode(ASTNodeType.TRUE, "");
-      readNT();
     }
     else if(isCurrentToken(TokenType.RESERVED, "false")){ //R -> 'false' => 'false'
       createTerminalASTNode(ASTNodeType.FALSE, "");
-      readNT();
     } 
     else if(isCurrentToken(TokenType.RESERVED, "nil")){ //R -> 'nil' => 'nil'
       createTerminalASTNode(ASTNodeType.NIL, "");
-      readNT();
     }
     else if(isCurrentTokenType(TokenType.L_PAREN)){
       readNT();
       procE(); //extra readNT in procE()
       if(!isCurrentTokenType(TokenType.R_PAREN))
         throw new ParseException("RN: ')' expected");
-      readNT();
     }
     else if(isCurrentToken(TokenType.RESERVED, "dummy")){ //R -> 'dummy' => 'dummy'
       createTerminalASTNode(ASTNodeType.DUMMY, "");
-      readNT();
     }
   }
 
@@ -385,29 +381,27 @@ public class Parser{
     if(isCurrentToken(TokenType.RESERVED, "within")){ //D -> Da 'within' D => 'within'
       readNT();
       procD();
-      buildASTNode(ASTNodeType.WITHIN, 2);
+      buildNAryASTNode(ASTNodeType.WITHIN, 2);
     }
   }
   
   private void procDA(){
     procDR(); //Da -> Dr
     //extra readToken() in procDR()
-    if(isCurrentToken(TokenType.RESERVED, "and")){ //Da -> Dr ( 'and' Dr )+ => 'and'
-      int treesToPop = 0;
-      do{
-        readNT();
-        procDR(); //extra readToken() in procDR()
-        treesToPop++;
-      } while(isCurrentToken(TokenType.RESERVED, "and"));
-      buildASTNode(ASTNodeType.SIMULTDEF, treesToPop+1);
+    int treesToPop = 0;
+    while(isCurrentToken(TokenType.RESERVED, "and")){ //Da -> Dr ( 'and' Dr )+ => 'and'
+      readNT();
+      procDR(); //extra readToken() in procDR()
+      treesToPop++;
     }
+    if(treesToPop > 0) buildNAryASTNode(ASTNodeType.SIMULTDEF, treesToPop+1);
   }
   
   private void procDR(){ //extra readToken() in procDR()
     if(isCurrentToken(TokenType.RESERVED, "rec")){ //Dr -> 'rec' Db => 'rec'
       readNT();
       procDB(); //extra readToken() in procDB()
-      buildASTNode(ASTNodeType.REC, 1);
+      buildNAryASTNode(ASTNodeType.REC, 1);
     }
     else{ //Dr -> Db
       procDB(); //extra readToken() in procDB()
@@ -433,10 +427,10 @@ public class Parser{
         //comma node with the identifier it missed.
         if(!isCurrentToken(TokenType.OPERATOR, "="))
           throw new ParseException("DB: = expected.");
-        buildASTNode(ASTNodeType.COMMA, 2);
+        buildNAryASTNode(ASTNodeType.COMMA, 2);
         readNT();
         procE(); //extra readNT in procE()
-        buildASTNode(ASTNodeType.EQUAL, 2);
+        buildNAryASTNode(ASTNodeType.EQUAL, 2);
       }
       else{ //Db -> '<IDENTIFIER>' Vb+ '=' E => 'fcn_form'
         int treesToPop = 0;
@@ -455,7 +449,7 @@ public class Parser{
         readNT();
         procE(); //extra readNT in procE()
         
-        buildASTNode(ASTNodeType.FCNFORM, treesToPop+2); //+1 for the last E and +1 for the first identifier
+        buildNAryASTNode(ASTNodeType.FCNFORM, treesToPop+2); //+1 for the last E and +1 for the first identifier
       }
     }
   }
@@ -496,7 +490,7 @@ public class Parser{
         readNT();
         treesToPop++;
       }
-      if(treesToPop > 0) buildASTNode(ASTNodeType.COMMA, treesToPop+1); //+1 for the first identifier
+      if(treesToPop > 0) buildNAryASTNode(ASTNodeType.COMMA, treesToPop+1); //+1 for the first identifier
     }
   }
 
