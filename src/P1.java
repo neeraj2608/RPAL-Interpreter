@@ -1,4 +1,4 @@
-package com.neeraj2608.rpalinterpreter;
+
 
 import java.io.IOException;
 
@@ -10,7 +10,7 @@ import com.neeraj2608.rpalinterpreter.scanner.Scanner;
  * Main driver class.
  * @author Raj
  */
-public class Controller{
+public class P1{
 
   public static void main(String[] args){
     String fileName = "test-input/test.txt";
