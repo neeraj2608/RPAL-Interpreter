@@ -183,24 +183,14 @@ public class Scanner{
     
     String nextChar = readNextChar();
     while(nextChar!=null){ //null indicates the file ended
-      if(nextChar.equals("\\")){ //match \t, \n, \\, \'
+      if(nextChar.equals("\'")){ //we just used up the last char we read, hence no need to set extraCharRead
         sBuilder.append(nextChar);
-        nextChar = readNextChar();
-        if(nextChar!= null && (nextChar.equals("n")||nextChar.equals("t")||nextChar.equals("\\")||nextChar.equals("'"))){
-          sBuilder.append(nextChar);
-          nextChar = readNextChar();
-        }
-        else //this represents an error condition and hence we're not concerned with setting extraCharRead
-          break;
+        opSymbolToken.setValue(sBuilder.toString());
+        return opSymbolToken;
       }
       else if(LexicalRegexPatterns.StringPattern.matcher(nextChar).matches()){ //match Letter | Digit | Operator_symbol
         sBuilder.append(nextChar);
         nextChar = readNextChar();
-      }
-      else if(nextChar.equals("\'")){ //we just used up the last char we read, hence no need to set extraCharRead
-        sBuilder.append(nextChar);
-        opSymbolToken.setValue(sBuilder.toString());
-        return opSymbolToken;
       }
     }
     
@@ -262,3 +252,4 @@ public class Scanner{
     return deleteToken;
   }
 }
+
