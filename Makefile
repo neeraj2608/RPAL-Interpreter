@@ -2,7 +2,8 @@
 
 JC = javac
 JFLAGS = -g
-CLASSDIR = class
+CLASSDIR = $(shell pwd)
+#CLASSDIR = class #need only this when CLASSDIR = class (and NOT pwd)
 SRCDIR = src
 
 .SUFFIXES: .java .class
@@ -22,14 +23,19 @@ SOURCEFILES := \
                com/neeraj2608/rpalinterpreter/ast/AST.java \
                com/neeraj2608/rpalinterpreter/parser/ParseException.java \
                com/neeraj2608/rpalinterpreter/parser/Parser.java \
-               com/neeraj2608/rpalinterpreter/Controller.java \
+               P1.java \
 
 all: dirs classestocompile
 
 classestocompile: $(addprefix $(CLASSDIR)/, $(SOURCEFILES:.java=.class))
 
 run:
-	@java -cp $(CLASSDIR) com.neeraj2608.rpalinterpreter.Controller
+	@java P1
+#@java -cp $(CLASSDIR) P1 #need only this when CLASSDIR = class (and NOT pwd)
+
+test:
+	./difftest.pl -1 "./rpal -ast -noout FILE" -2 "java P1 -ast -noout FILE" -t ~/rpal/tests/
+#./difftest.pl -1 "./rpal -ast -noout FILE" -2 "java P1 -ast -noout FILE" -t ~/rpal/tests/
 
 dirs:
 	@mkdir -p $(CLASSDIR)
@@ -37,4 +43,6 @@ dirs:
 cl: clean
 
 clean:
-	@rm -rf ./class
+	@rm -rf com
+	@rm -f P1
+#@rm -fr $(CLASSDIR) #need only this when CLASSDIR = class (and NOT pwd)
