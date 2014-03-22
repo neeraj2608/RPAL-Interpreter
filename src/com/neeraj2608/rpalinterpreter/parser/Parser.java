@@ -337,7 +337,9 @@ public class Parser{
         isCurrentTokenType(TokenType.L_PAREN)){ //R -> R Rn => 'gamma'
       procRN(); //NO extra readNT in procRN(). This is important because if we do an extra readNT in procRN and currentToken happens to
                 //be an INTEGER, IDENTIFIER, or STRING, it will get pushed on the stack. Then, the GAMMA node that we build will have the
-                //wrong kids
+                //wrong kids. There are workarounds, e.g. keeping the extra readNT in procRN() and checking here if the last token read
+                //(which was read in procRN()) is an INTEGER, IDENTIFIER, or STRING and, if so, to pop it, call buildNAryASTNode, and then
+                //push it again. I chose this option because it seems cleaner.
       buildNAryASTNode(ASTNodeType.GAMMA, 2);
       readNT();
     }
@@ -433,23 +435,30 @@ public class Parser{
         buildNAryASTNode(ASTNodeType.EQUAL, 2);
       }
       else{ //Db -> '<IDENTIFIER>' Vb+ '=' E => 'fcn_form'
-        int treesToPop = 0;
-        
-        while(isCurrentTokenType(TokenType.IDENTIFIER) || isCurrentTokenType(TokenType.L_PAREN)){
-          procVB(); //extra readNT in procVB()
-          treesToPop++;
+        if(isCurrentToken(TokenType.OPERATOR, "=")){ //Db -> Vl '=' E => '='; if Vl had only one IDENTIFIER (no commas)
+          readNT();
+          procE(); //extra readNT in procE()
+          buildNAryASTNode(ASTNodeType.EQUAL, 2);
         }
-        
-        if(treesToPop==0)
-          throw new ParseException("E: at least one 'Vb' expected");
-        
-        if(!isCurrentToken(TokenType.OPERATOR, "="))
-          throw new ParseException("DB: = expected.");
-        
-        readNT();
-        procE(); //extra readNT in procE()
-        
-        buildNAryASTNode(ASTNodeType.FCNFORM, treesToPop+2); //+1 for the last E and +1 for the first identifier
+        else{ //Db -> '<IDENTIFIER>' Vb+ '=' E => 'fcn_form'
+          int treesToPop = 0;
+
+          while(isCurrentTokenType(TokenType.IDENTIFIER) || isCurrentTokenType(TokenType.L_PAREN)){
+            procVB(); //extra readNT in procVB()
+            treesToPop++;
+          }
+
+          if(treesToPop==0)
+            throw new ParseException("E: at least one 'Vb' expected");
+
+          if(!isCurrentToken(TokenType.OPERATOR, "="))
+            throw new ParseException("DB: = expected.");
+
+          readNT();
+          procE(); //extra readNT in procE()
+
+          buildNAryASTNode(ASTNodeType.FCNFORM, treesToPop+2); //+1 for the last E and +1 for the first identifier
+        }
       }
     }
   }
