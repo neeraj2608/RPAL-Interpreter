@@ -44,5 +44,5 @@ cl: clean
 
 clean:
 	@rm -rf com
-	@rm -f P1
+	@rm -f P1.class
 #@rm -fr $(CLASSDIR) #need only this when CLASSDIR = class (and NOT pwd)
