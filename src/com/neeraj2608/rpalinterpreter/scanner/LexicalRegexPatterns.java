@@ -22,7 +22,7 @@ public class LexicalRegexPatterns{
   public static final String opSymbolRegex = "[" + escapeRegEx(opSymbolChars, opSymbolCharsToEscape) + "]";
   public static final Pattern OpSymbolPattern = Pattern.compile(opSymbolRegex);
   
-  public static final Pattern StringPattern = Pattern.compile("[a-zA-Z\\d"+ escapeRegEx(opSymbolChars, opSymbolCharsToEscape) +"]");
+  public static final Pattern StringPattern = Pattern.compile("[ a-zA-Z\\d"+ escapeRegEx(opSymbolChars, opSymbolCharsToEscape) +"]");
   
   public static final Pattern SpacePattern = Pattern.compile("\\s");
   
