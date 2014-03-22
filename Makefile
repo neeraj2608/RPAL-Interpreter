@@ -29,7 +29,7 @@ all: dirs classestocompile
 
 classestocompile: $(addprefix $(CLASSDIR)/, $(SOURCEFILES:.java=.class))
 
-run:
+run: all
 	@java P1
 #@java -cp $(CLASSDIR) P1 #need only this when CLASSDIR = class (and NOT pwd)
 
