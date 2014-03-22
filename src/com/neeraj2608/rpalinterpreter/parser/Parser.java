@@ -10,7 +10,7 @@ import com.neeraj2608.rpalinterpreter.scanner.Token;
 import com.neeraj2608.rpalinterpreter.scanner.TokenType;
 
 /**
- * Parser: Recursive descent parser that complies with RPAL's phrase structure grammar.
+ * Recursive descent parser that complies with RPAL's phrase structure grammar.
  * This class does all the heavy lifting. It gets input from the scanner, and builds the
  * abstract syntax tree.
  * @author Raj
@@ -27,7 +27,6 @@ public class Parser{
   
   public AST buildAST(){
     startParse();
-    //TODO: need guards here??
     return new AST(stack.pop());
   }
 
