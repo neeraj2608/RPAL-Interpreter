@@ -9,7 +9,7 @@ import java.util.Arrays;
 import java.util.List;
 
 /**
- * Scanner: Combines a lexer and a screener.
+ * Scanner: Combines a lexer and a screener. Complies with RPAL's Lexicon.
  * @author Raj
  */
 public class Scanner{

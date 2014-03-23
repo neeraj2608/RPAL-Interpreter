@@ -1,5 +1,9 @@
 package com.neeraj2608.rpalinterpreter.ast;
 
+/**
+ * Type of abstract syntax tree node. As specified in the RPAL phrase structure grammar.
+ * @author Raj
+ */
 public enum ASTNodeType{
   //General
   IDENTIFIER("<ID:%s>"),

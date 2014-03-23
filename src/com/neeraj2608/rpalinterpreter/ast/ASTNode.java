@@ -1,7 +1,7 @@
 package com.neeraj2608.rpalinterpreter.ast;
 
 /**
- * Abstract Syntax Tree node.
+ * Abstract Syntax Tree node. Uses a first-child, next-sibling representation.
  * @author Raj
  */
 public class ASTNode{
