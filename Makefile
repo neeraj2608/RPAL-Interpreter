@@ -38,7 +38,7 @@ jar: all
 	@jar -cf P1.jar -m MANIFEST.MF -C . com/ P1.class
 	@echo " done."
 
-test:
+test: all
 	./difftest.pl -1 "./rpal -ast -noout FILE" -2 "java P1 -ast -noout FILE" -t ~/rpal/tests/
 #./difftest.pl -1 "./rpal -ast -noout FILE" -2 "java P1 -ast -noout FILE" -t ~/rpal/tests/
 
