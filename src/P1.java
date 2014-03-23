@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 
 import com.neeraj2608.rpalinterpreter.ast.AST;
+import com.neeraj2608.rpalinterpreter.parser.ParseException;
 import com.neeraj2608.rpalinterpreter.parser.Parser;
 import com.neeraj2608.rpalinterpreter.scanner.Scanner;
 
@@ -68,9 +69,9 @@ public class P1{
         System.out.println(s);
       }
     }catch(FileNotFoundException e){
-      System.out.println("File "+fileName+" not found.");
+      throw new ParseException("File "+fileName+" not found.");
     }catch(IOException e){
-      System.out.println("Error reading from file "+fileName);
+      throw new ParseException("Error reading from file "+fileName);
     }finally{
       try{
         if(buffer!=null) buffer.close();
@@ -86,7 +87,7 @@ public class P1{
       Parser parser = new Parser(scanner);
       ast = parser.buildAST();
     }catch(IOException e){
-      System.out.println("ERROR: Could not read from file: " + fileName);
+      throw new ParseException("ERROR: Could not read from file: " + fileName);
     }
     return ast;
   }
