@@ -33,6 +33,11 @@ run: all
 	@java P1
 #@java -cp $(CLASSDIR) P1 #need only this when CLASSDIR = class (and NOT pwd)
 
+jar: all
+	@echo -n ">>> Generating P1.jar... "
+	@jar -cf P1.jar -m MANIFEST.MF -C . com/ P1.class
+	@echo " done."
+
 test:
 	./difftest.pl -1 "./rpal -ast -noout FILE" -2 "java P1 -ast -noout FILE" -t ~/rpal/tests/
 #./difftest.pl -1 "./rpal -ast -noout FILE" -2 "java P1 -ast -noout FILE" -t ~/rpal/tests/
@@ -45,4 +50,5 @@ cl: clean
 clean:
 	@rm -rf com
 	@rm -f P1.class
+	@rm -f *.jar
 #@rm -fr $(CLASSDIR) #need only this when CLASSDIR = class (and NOT pwd)
