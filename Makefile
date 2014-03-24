@@ -29,15 +29,27 @@ all: dirs classestocompile
 
 classestocompile: $(addprefix $(CLASSDIR)/, $(SOURCEFILES:.java=.class))
 
+# Example usage: `make run cmd='-ast ~/rpal/tests/add'`
+# The cmd variable is passed to the p1 script, which in turn passes
+# it to P1.java
 run: all
-	@java P1
+  ifeq ($(strip $(cmd)),) #NOTE: conditional directive must NOT start with a tab!
+		@echo "Please provide parser switches using the cmd variable e.g."
+		@echo "make run cmd='-ast <filename>'"
+  else
+		@./p1 $(cmd)
+  endif
 #@java -cp $(CLASSDIR) P1 #need only this when CLASSDIR = class (and NOT pwd)
 
+
+# example usage: `make jar`
 jar: all
 	@echo -n ">>> Generating P1.jar... "
 	@jar -cf P1.jar -m MANIFEST.MF -C . com/ P1.class
 	@echo " done."
 
+
+# example usage: `make test`
 test: all
 	./difftest.pl -1 "./rpal -ast -noout FILE" -2 "java P1 -ast -noout FILE" -t ~/rpal/tests/
 #./difftest.pl -1 "./rpal -ast -noout FILE" -2 "java P1 -ast -noout FILE" -t ~/rpal/tests/

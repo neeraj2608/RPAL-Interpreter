@@ -40,23 +40,23 @@ public class P1{
     
     if(listFlag){
       if(fileName.isEmpty())
-        throw new RuntimeException("Please specify a file. Call P1 with -help to see examples");
+        throw new ParseException("Please specify a file. Call P1 with -help to see examples");
       printInputListing(fileName);
     }
     
     if(astFlag){
       if(fileName.isEmpty())
-        throw new RuntimeException("Please specify a file. Call P1 with -help to see examples");
+        throw new ParseException("Please specify a file. Call P1 with -help to see examples");
       ast = buildAST(fileName, true);
       printAST(ast);
-      if(!noOutFlag)
-        throw new RuntimeException("Interpreting has not been implemented as yet. Please provide -noout with -ast.");
+      //if(!noOutFlag)
+      //  throw new ParseException("Interpreting has not been implemented as yet. Please provide -noout with -ast.");
     }
     
     //-noout without -ast produces no output
     if(noOutFlag && !astFlag){
       if(fileName.isEmpty())
-        throw new RuntimeException("Please specify a file. Call P1 with -help to see examples");
+        throw new ParseException("Please specify a file. Call P1 with -help to see examples");
     }
   }
 
