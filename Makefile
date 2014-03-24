@@ -63,4 +63,5 @@ clean:
 	@rm -rf com
 	@rm -f P1.class
 	@rm -f *.jar
+	@rm -fr diffresult
 #@rm -fr $(CLASSDIR) #need only this when CLASSDIR = class (and NOT pwd)
