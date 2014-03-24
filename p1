@@ -1,7 +1,14 @@
 #!/bin/bash
 
-if [ ! -f "P1.class" ]
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+PWD="$( pwd )"
+
+#Compile source if necessary
+if [ ! -f $DIR/"P1.class" ]
 then
-  make;
+  cd $DIR
+  make
+  cd $PWD
 fi;
-java -cp . P1 $1 $2 $3
+
+java -cp $DIR P1 $1 $2 $3
