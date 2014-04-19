@@ -1,1 +1,1 @@
-let f x y z = x + y + z in f 1 2 3
+let x = 3 and y = 2 in x + y
