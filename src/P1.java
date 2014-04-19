@@ -48,6 +48,7 @@ public class P1{
       if(fileName.isEmpty())
         throw new ParseException("Please specify a file. Call P1 with -help to see examples");
       ast = buildAST(fileName, true);
+      ast.standardize();
       printAST(ast);
       //if(!noOutFlag)
       //  throw new ParseException("Interpreting has not been implemented as yet. Please provide -noout with -ast.");
