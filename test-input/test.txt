@@ -1,1 +1,1 @@
-(fn x y z. x + y + z) 2 3 4
+let A = 1 in Print (+ A 1)
