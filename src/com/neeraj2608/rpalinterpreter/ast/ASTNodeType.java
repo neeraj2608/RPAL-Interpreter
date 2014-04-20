@@ -56,9 +56,12 @@ public enum ASTNodeType{
   
   //Variables
   PAREN("<()>"),
-  COMMA(",");
+  COMMA(","),
   
-  //Ystar? Bar?
+  //Post-standardize
+  YSTAR("<Y*>");
+  
+  //Bar?
   
   private String printName;
   

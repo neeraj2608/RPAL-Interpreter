@@ -163,6 +163,39 @@ public class AST{
         node.setChild(commaNode);
         node.setType(ASTNodeType.EQUAL);
         break;
+      case REC:
+        //        REC                 EQUAL
+        //         |                 /     \
+        //       EQUAL     ->       X     GAMMA
+        //      /     \                   /    \
+        //     X       E                YSTAR  LAMBDA
+        //                                     /     \
+        //                                    X       E
+        childNode = node.getChild();
+        if(childNode.getType()!=ASTNodeType.EQUAL)
+          throw new StandardizeException("REC: child is not EQUAL"); //safety
+        ASTNode x = childNode.getChild();
+        lambdaNode = new ASTNode();
+        lambdaNode.setType(ASTNodeType.LAMBDA);
+        lambdaNode.setChild(x); //x is already attached to e
+        ASTNode yStarNode = new ASTNode();
+        yStarNode.setType(ASTNodeType.YSTAR);
+        yStarNode.setSibling(lambdaNode);
+        gammaNode = new ASTNode();
+        gammaNode.setType(ASTNodeType.GAMMA);
+        gammaNode.setChild(yStarNode);
+        ASTNode xWithSiblingGamma = new ASTNode(); //same as x except the sibling is not e but gamma
+        xWithSiblingGamma.setChild(x.getChild());
+        xWithSiblingGamma.setSibling(gammaNode);
+        xWithSiblingGamma.setType(x.getType());
+        xWithSiblingGamma.setValue(x.getValue());
+        node.setChild(xWithSiblingGamma);
+        node.setType(ASTNodeType.EQUAL);
+        break;
+      case LAMBDA:
+        childSibling = node.getChild().getSibling();
+        node.getChild().setSibling(constructLambdaChain(childSibling));
+        break;
       default:
         // Node types we do NOT standardize:
         // CSE Optimization Rule 6 (binops)

@@ -19,6 +19,7 @@ public class P1{
   public static void main(String[] args){
     boolean listFlag = false;
     boolean astFlag = false;
+    boolean stFlag = false;
     boolean noOutFlag = false;
     String fileName = "";
     AST ast = null;
@@ -28,6 +29,8 @@ public class P1{
         listFlag = true;
       else if(cmdOption.equals("-ast"))
         astFlag = true;
+      else if(cmdOption.equals("-st"))
+        stFlag = true;
       else if(cmdOption.equals("-noout"))
         noOutFlag = true;
       else
@@ -48,14 +51,23 @@ public class P1{
       if(fileName.isEmpty())
         throw new ParseException("Please specify a file. Call P1 with -help to see examples");
       ast = buildAST(fileName, true);
+      printAST(ast);
+      //if(!noOutFlag)
+      //  throw new ParseException("Interpreting has not been implemented as yet. Please provide -noout with -ast.");
+    }
+    
+    if(stFlag){
+      if(fileName.isEmpty())
+        throw new ParseException("Please specify a file. Call P1 with -help to see examples");
+      ast = buildAST(fileName, true);
       ast.standardize();
       printAST(ast);
       //if(!noOutFlag)
       //  throw new ParseException("Interpreting has not been implemented as yet. Please provide -noout with -ast.");
     }
     
-    //-noout without -ast produces no output
-    if(noOutFlag && !astFlag){
+    //-noout without -ast or -st produces no output
+    if(noOutFlag && (!astFlag || !stFlag)){
       if(fileName.isEmpty())
         throw new ParseException("Please specify a file. Call P1 with -help to see examples");
     }
