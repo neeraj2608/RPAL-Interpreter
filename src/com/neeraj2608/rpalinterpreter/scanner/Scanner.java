@@ -179,12 +179,12 @@ public class Scanner{
   private Token buildStringToken(String currentChar){
     Token opSymbolToken = new Token();
     opSymbolToken.setType(TokenType.STRING);
-    StringBuilder sBuilder = new StringBuilder(currentChar);
+    StringBuilder sBuilder = new StringBuilder("");
     
     String nextChar = readNextChar();
     while(nextChar!=null){ //null indicates the file ended
       if(nextChar.equals("\'")){ //we just used up the last char we read, hence no need to set extraCharRead
-        sBuilder.append(nextChar);
+        //sBuilder.append(nextChar);
         opSymbolToken.setValue(sBuilder.toString());
         return opSymbolToken;
       }

@@ -14,6 +14,7 @@ public class AST{
   private Environment currentEnv;
   private Stack<PendingDeltaBody> pendingDeltaBodyStack;
   private boolean standardized;
+  private Delta currentDelta;
 
   public AST(ASTNode node){
     this.root = node;
@@ -37,10 +38,11 @@ public class AST{
 
   private void printASTNodeDetails(ASTNode node, String printPrefix){
     if(node.getType() == ASTNodeType.IDENTIFIER ||
-        node.getType() == ASTNodeType.INTEGER ||
-        node.getType() == ASTNodeType.STRING){
+        node.getType() == ASTNodeType.INTEGER){
       System.out.printf(printPrefix+node.getType().getPrintName()+"\n",node.getValue());
     }
+    else if(node.getType() == ASTNodeType.STRING)
+      System.out.printf(printPrefix+node.getType().getPrintName()+"\n",node.getValue());
     else if(node.getType() == ASTNodeType.DELTA){
       System.out.println((Delta) node);
     }
@@ -285,14 +287,14 @@ public class AST{
    */
   public Delta createDelta(){
     pendingDeltaBodyStack = new Stack<PendingDeltaBody>();
-    Delta d0 = createDelta(root);
-    emptyPendingDeltaStack();
-    return d0;
+    currentDelta = createDelta(root);
+    processPendingDeltaStack();
+    return currentDelta;
   }
 
   private Delta createDelta(ASTNode startBodyNode){
-    //the environments created here are just placeholders. We'll only populate them when
-    //we evaluate the program in the CSEM
+    // RULE 2: the environments created here are just placeholders. We'll only populate them when
+    //         we evaluate the program in the CSEM
     if(currentEnv==null)
       currentEnv = new Environment(); //primitive environment
     else{
@@ -310,11 +312,13 @@ public class AST{
     Delta d = new Delta();
     d.setBody(pendingDelta.body);
     d.setCurrentEnv(currentEnv);
+    d.setPreviousDelta(currentDelta);
+    currentDelta = d;
     
     return d;
   }
 
-  private void emptyPendingDeltaStack(){
+  private void processPendingDeltaStack(){
     while(!pendingDeltaBodyStack.isEmpty()){
       PendingDeltaBody pendingDeltaBody = pendingDeltaBodyStack.pop();
       buildDeltaBody(pendingDeltaBody.startNode, pendingDeltaBody.body);
@@ -345,9 +349,5 @@ public class AST{
 
   public boolean isStandardized(){
     return standardized;
-  }
-
-  public void setStandardized(boolean standardized){
-    this.standardized = standardized;
   }
 }

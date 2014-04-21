@@ -11,6 +11,7 @@ public class Delta extends ASTNode{
                                   //refers back (via the parent field) to the environment
                                   //in effect when this delta was created
   private Stack<ASTNode> body;
+  private Delta previousDelta;
   
   public Delta(){
     setType(ASTNodeType.DELTA);
@@ -44,5 +45,13 @@ public class Delta extends ASTNode{
   
   public void setBody(Stack<ASTNode> body){
     this.body = body;
+  }
+
+  public Delta getPreviousDelta(){
+    return previousDelta;
+  }
+
+  public void setPreviousDelta(Delta previousDelta){
+    this.previousDelta = previousDelta;
   }
 }

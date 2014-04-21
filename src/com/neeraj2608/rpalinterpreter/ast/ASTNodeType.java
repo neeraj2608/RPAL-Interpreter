@@ -7,7 +7,7 @@ package com.neeraj2608.rpalinterpreter.ast;
 public enum ASTNodeType{
   //General
   IDENTIFIER("<ID:%s>"),
-  STRING("<STR:%s>"),
+  STRING("<STR:'%s'>"),
   INTEGER("<INT:%s>"),
   
   //Expressions

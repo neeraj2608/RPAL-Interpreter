@@ -1,1 +1,1 @@
-(fn x. x - 1) 4
+Print (Stem 'abc')
