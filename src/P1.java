@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 
 import com.neeraj2608.rpalinterpreter.ast.AST;
+import com.neeraj2608.rpalinterpreter.csem.CSEMachine;
 import com.neeraj2608.rpalinterpreter.parser.ParseException;
 import com.neeraj2608.rpalinterpreter.parser.Parser;
 import com.neeraj2608.rpalinterpreter.scanner.Scanner;
@@ -52,8 +53,9 @@ public class P1{
         throw new ParseException("Please specify a file. Call P1 with -help to see examples");
       ast = buildAST(fileName, true);
       printAST(ast);
-      //if(!noOutFlag)
-      //  throw new ParseException("Interpreting has not been implemented as yet. Please provide -noout with -ast.");
+      if(noOutFlag) return;
+      ast.standardize();
+      evaluateST(ast);
     }
     
     if(stFlag){
@@ -62,8 +64,8 @@ public class P1{
       ast = buildAST(fileName, true);
       ast.standardize();
       printAST(ast);
-      //if(!noOutFlag)
-      //  throw new ParseException("Interpreting has not been implemented as yet. Please provide -noout with -ast.");
+      if(noOutFlag) return;
+      evaluateST(ast);
     }
     
     //-noout without -ast or -st produces no output
@@ -71,6 +73,11 @@ public class P1{
       if(fileName.isEmpty())
         throw new ParseException("Please specify a file. Call P1 with -help to see examples");
     }
+  }
+
+  private static void evaluateST(AST ast){
+    CSEMachine csem = new CSEMachine(ast);
+    System.out.println(csem.run());
   }
 
   private static void printInputListing(String fileName){
