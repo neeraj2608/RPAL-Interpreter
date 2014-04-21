@@ -41,6 +41,9 @@ public class AST{
         node.getType() == ASTNodeType.STRING){
       System.out.printf(printPrefix+node.getType().getPrintName()+"\n",node.getValue());
     }
+    else if(node.getType() == ASTNodeType.DELTA){
+      System.out.println((Delta) node);
+    }
     else{
       System.out.println(printPrefix+node.getType().getPrintName());
     }
@@ -277,8 +280,8 @@ public class AST{
   }
 
   /**
-   * Creates delta structures
-   * @param ast
+   * Creates delta structures from the standardized tree
+   * @return the first delta structure (&delta;0)
    */
   public Delta createDelta(){
     pendingDeltaBodyStack = new Stack<PendingDeltaBody>();

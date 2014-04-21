@@ -9,14 +9,17 @@ public class CSEMachine{
   
   private Stack<ASTNode> controlStack;
   private Environment currentEnv;
+  private Delta currentDelta;
   
   public CSEMachine(AST ast){
     if(!ast.isStandardized())
-      throw new EvaluationException("AST is NOT standardized!");
-    Delta d = ast.createDelta();
+      throw new EvaluationException("AST has NOT been standardized!");
+    currentDelta = ast.createDelta();
   }
 
-  public String run(){
+  public String evaluateProgram(){
+    controlStack = currentDelta.getBody();
+    currentEnv = currentDelta.getCurrentEnv();
     return null;
   }
 

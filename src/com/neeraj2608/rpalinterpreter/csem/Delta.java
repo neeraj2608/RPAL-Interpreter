@@ -20,6 +20,12 @@ public class Delta extends ASTNode{
     return boundVar;
   }
   
+  //used if the program evaluation results in a partial application
+  @Override
+  public String toString(){
+    return "[lambda closure: "+boundVar+": "+currentEnv.lookup(boundVar)+"]";
+  }
+  
   public void setBoundVar(String boundVar){
     this.boundVar = boundVar;
   }
