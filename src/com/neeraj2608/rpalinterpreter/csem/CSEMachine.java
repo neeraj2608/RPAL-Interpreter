@@ -11,6 +11,9 @@ public class CSEMachine{
   private Environment currentEnv;
   
   public CSEMachine(AST ast){
+    if(!ast.isStandardized())
+      throw new EvaluationException("AST is NOT standardized!");
+    Delta d = ast.createDelta();
   }
 
   public String run(){

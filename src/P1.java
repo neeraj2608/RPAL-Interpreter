@@ -39,7 +39,7 @@ public class P1{
     }
     
     //calling P1 without any switches produces no output
-    if(!listFlag && !astFlag && !noOutFlag)
+    if(!listFlag && !astFlag && !stFlag && !noOutFlag)
       return;
     
     if(listFlag){
@@ -53,7 +53,8 @@ public class P1{
         throw new ParseException("Please specify a file. Call P1 with -help to see examples");
       ast = buildAST(fileName, true);
       printAST(ast);
-      if(noOutFlag) return;
+      if(noOutFlag)
+        return;
       ast.standardize();
       evaluateST(ast);
     }
@@ -64,7 +65,8 @@ public class P1{
       ast = buildAST(fileName, true);
       ast.standardize();
       printAST(ast);
-      if(noOutFlag) return;
+      if(noOutFlag)
+        return;
       evaluateST(ast);
     }
     

@@ -59,7 +59,10 @@ public enum ASTNodeType{
   COMMA(","),
   
   //Post-standardize
-  YSTAR("<Y*>");
+  YSTAR("<Y*>"),
+  
+  //For evaluation
+  DELTA("");
   
   //Bar?
   
