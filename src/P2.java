@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 
 import com.neeraj2608.rpalinterpreter.ast.AST;
+import com.neeraj2608.rpalinterpreter.csem.CSEMachine;
 import com.neeraj2608.rpalinterpreter.parser.ParseException;
 import com.neeraj2608.rpalinterpreter.parser.Parser;
 import com.neeraj2608.rpalinterpreter.scanner.Scanner;
@@ -14,11 +15,12 @@ import com.neeraj2608.rpalinterpreter.scanner.Scanner;
  * Main driver class.
  * @author Raj
  */
-public class P1{
+public class P2{
 
   public static void main(String[] args){
     boolean listFlag = false;
     boolean astFlag = false;
+    boolean stFlag = false;
     boolean noOutFlag = false;
     String fileName = "";
     AST ast = null;
@@ -28,15 +30,21 @@ public class P1{
         listFlag = true;
       else if(cmdOption.equals("-ast"))
         astFlag = true;
+      else if(cmdOption.equals("-st"))
+        stFlag = true;
       else if(cmdOption.equals("-noout"))
         noOutFlag = true;
       else
         fileName = cmdOption;
     }
     
-    //calling P1 without any switches produces no output
-    if(!listFlag && !astFlag && !noOutFlag)
+    //calling P2 without any switches should evaluate the program and print the result
+    if(!listFlag && !astFlag && !stFlag && !noOutFlag){
+      ast = buildAST(fileName, true);
+      ast.standardize();
+      evaluateST(ast);
       return;
+    }
     
     if(listFlag){
       if(fileName.isEmpty())
@@ -49,15 +57,34 @@ public class P1{
         throw new ParseException("Please specify a file. Call P1 with -help to see examples");
       ast = buildAST(fileName, true);
       printAST(ast);
-      //if(!noOutFlag)
-      //  throw new ParseException("Interpreting has not been implemented as yet. Please provide -noout with -ast.");
+      if(noOutFlag)
+        return;
+      ast.standardize();
+      evaluateST(ast);
     }
     
-    //-noout without -ast produces no output
-    if(noOutFlag && !astFlag){
+    if(stFlag){
+      if(fileName.isEmpty())
+        throw new ParseException("Please specify a file. Call P1 with -help to see examples");
+      ast = buildAST(fileName, true);
+      ast.standardize();
+      printAST(ast);
+      if(noOutFlag)
+        return;
+      evaluateST(ast);
+    }
+    
+    //-noout without -ast or -st produces no output
+    if(noOutFlag && (!astFlag || !stFlag)){
       if(fileName.isEmpty())
         throw new ParseException("Please specify a file. Call P1 with -help to see examples");
     }
+   
+  }
+
+  private static void evaluateST(AST ast){
+    CSEMachine csem = new CSEMachine(ast);
+    System.out.println(csem.evaluateProgram());
   }
 
   private static void printInputListing(String fileName){

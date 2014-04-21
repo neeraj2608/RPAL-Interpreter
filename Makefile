@@ -51,7 +51,7 @@ jar: all
 
 # example usage: `make test`
 test: all
-	./difftest.pl -1 "./rpal -ast -noout FILE" -2 "java P1 -ast -noout FILE" -t ~/rpal/tests/
+	./difftest.pl -1 "./rpal -st -noout FILE" -2 "java P2 -st -noout FILE" -t ~/rpal/tests/
 #./difftest.pl -1 "./rpal -ast -noout FILE" -2 "java P1 -ast -noout FILE" -t ~/rpal/tests/
 
 dirs:
