@@ -488,13 +488,13 @@ public class Parser{
        isCurrentTokenType(TokenType.STRING)){ //R-> '<STRING>'
     }
     else if(isCurrentToken(TokenType.RESERVED, "true")){ //R -> 'true' => 'true'
-      createTerminalASTNode(ASTNodeType.TRUE, "");
+      createTerminalASTNode(ASTNodeType.TRUE, "true");
     }
     else if(isCurrentToken(TokenType.RESERVED, "false")){ //R -> 'false' => 'false'
-      createTerminalASTNode(ASTNodeType.FALSE, "");
+      createTerminalASTNode(ASTNodeType.FALSE, "false");
     } 
     else if(isCurrentToken(TokenType.RESERVED, "nil")){ //R -> 'nil' => 'nil'
-      createTerminalASTNode(ASTNodeType.NIL, "");
+      createTerminalASTNode(ASTNodeType.NIL, "nil");
     }
     else if(isCurrentTokenType(TokenType.L_PAREN)){
       readNT();
@@ -503,7 +503,7 @@ public class Parser{
         throw new ParseException("RN: ')' expected");
     }
     else if(isCurrentToken(TokenType.RESERVED, "dummy")){ //R -> 'dummy' => 'dummy'
-      createTerminalASTNode(ASTNodeType.DUMMY, "");
+      createTerminalASTNode(ASTNodeType.DUMMY, "dummy");
     }
   }
 

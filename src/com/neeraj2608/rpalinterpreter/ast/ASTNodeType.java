@@ -62,8 +62,7 @@ public enum ASTNodeType{
   YSTAR("<Y*>"),
   
   //For evaluation
-  DELTA(""),
-  PARTIAL("");
+  DELTA("");
   
   //Bar?
   

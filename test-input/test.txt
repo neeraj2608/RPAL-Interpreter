@@ -1,1 +1,1 @@
-Print (ItoS 12)
+Print (not (true or false))
