@@ -1,1 +1,1 @@
-Print (- 2)
+Print (Null (,))

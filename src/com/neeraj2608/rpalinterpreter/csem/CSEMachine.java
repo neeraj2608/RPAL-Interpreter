@@ -55,6 +55,9 @@ public class CSEMachine{
         case IDENTIFIER:
           handleIdentifiers(node);
           break;
+        case TAU:
+          createTuple(node);
+          break;
         case GAMMA:
           applyGamma();
           break;
@@ -306,6 +309,12 @@ public class CSEMachine{
       case "Isfunction":
         checkTypeAndPushTrueOrFalse(rand, ASTNodeType.DELTA);
         return true;
+      case "Istuple":
+        checkTypeAndPushTrueOrFalse(rand, ASTNodeType.TUPLE);
+        return true;
+      case "Null":
+        checkTypeAndPushTrueOrFalse(rand, ASTNodeType.NIL);
+        return true;
       case "Istruthvalue":
         if(rand.getType()==ASTNodeType.TRUE||rand.getType()==ASTNodeType.FALSE)
           pushTrueNode();
@@ -329,12 +338,8 @@ public class CSEMachine{
       case "ItoS":
         itos(rand);
         return true;
-      case "Istuple":
-        //TODO
       case "Order":
-        //TODO
-      case "Null":
-        //TODO
+        order(rand);
         return true;
     }
     return false;
@@ -392,20 +397,68 @@ public class CSEMachine{
     result.setValue(rand1.getValue()+rand2.getValue());
     valueStack.push(result);
   }
-
+  
   private void itos(ASTNode rand){
     if(rand.getType()!=ASTNodeType.INTEGER)
       throw new EvaluationException("Expected an integer; was given \""+rand.getValue()+"\"");
-
+    
     rand.setType(ASTNodeType.STRING); //we store all values internally as strings, so nothing to do
     valueStack.push(rand);
   }
-
+  
+  private void order(ASTNode rand){
+    if(rand.getType()!=ASTNodeType.TUPLE)
+      throw new EvaluationException("Expected a tuple; was given \""+rand.getValue()+"\"");
+    
+    ASTNode result = new ASTNode();
+    result.setType(ASTNodeType.INTEGER);
+    result.setValue(Integer.toString(getNumChildren(rand)));
+    valueStack.push(result);
+  }
+  
   private void handleIdentifiers(ASTNode node){
     if(isReservedIdentifier(node.getValue()))
       valueStack.push(node);
     else // RULE 1
       valueStack.push(envInEffect.lookup(node.getValue()));
+  }
+
+  private void createTuple(ASTNode node){
+    int numChildren = getNumChildren(node);
+    ASTNode tupleNode = new ASTNode();
+    tupleNode.setType(ASTNodeType.TUPLE);
+    ASTNode childNode = null, tempNode = null;
+    String value = "(";
+    for(int i=0;i<numChildren;++i){
+      if(i==numChildren-1)
+        value += valueStack.peek().getValue() + ")";
+      else
+        value += valueStack.peek().getValue() + ", ";
+      
+      if(childNode==null)
+        childNode = valueStack.pop();
+      else if(tempNode==null){
+        tempNode = valueStack.pop();
+        childNode.setSibling(tempNode);
+      }
+      else{
+        tempNode.setSibling(valueStack.pop());
+        tempNode = tempNode.getSibling();
+      }
+    }
+    tupleNode.setValue(value);
+    tupleNode.setChild(childNode);
+    valueStack.push(tupleNode);
+  }
+
+  private int getNumChildren(ASTNode node){
+    int numChildren = 0;
+    ASTNode childNode = node.getChild();
+    while(childNode!=null){
+      numChildren++;
+      childNode = childNode.getSibling();
+    }
+    return numChildren;
   }
 
   // Note how this list is different from the one defined in Scanner.java

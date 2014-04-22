@@ -44,7 +44,7 @@ public class AST{
     else if(node.getType() == ASTNodeType.STRING)
       System.out.printf(printPrefix+node.getType().getPrintName()+"\n",node.getValue());
     else if(node.getType() == ASTNodeType.DELTA){
-      System.out.println((Delta) node);
+      System.out.println(printPrefix+(Delta) node);
     }
     else{
       System.out.println(printPrefix+node.getType().getPrintName());
