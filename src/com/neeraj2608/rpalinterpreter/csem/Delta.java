@@ -24,7 +24,39 @@ public class Delta extends ASTNode{
   //used if the program evaluation results in a partial application
   @Override
   public String getValue(){
-    return "[lambda closure: "+boundVar+": "+currentEnv.lookup(boundVar)+"]";
+    return "[lambda closure:"+printBody(body.firstElement())+" "+boundVar+" free]";
+  }
+  
+  private String printBody(ASTNode node){
+    String retValue = "";
+    if(node==null)
+      return retValue;
+    
+    ASTNode childNode = node.getChild();
+    
+    if(childNode==null)
+      return getASTNodeDetails(node);
+    
+    while(childNode!=null){
+      retValue += printBody(childNode);
+      if(childNode.getSibling()!=null)
+        retValue += getASTNodeDetails(node);
+      childNode = childNode.getSibling();
+    }
+    
+    return retValue;
+  }
+
+  private String getASTNodeDetails(ASTNode node){
+    if(node.getType() == ASTNodeType.IDENTIFIER){
+      try{
+        return " "+node.getValue()+"="+currentEnv.lookup(node.getValue()).getValue()+",";
+      }
+      catch(EvaluationException e){
+        return " "+node.getValue()+",";
+      }
+    }
+    return "";
   }
   
   public void setBoundVar(String boundVar){

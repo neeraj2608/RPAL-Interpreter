@@ -1,1 +1,2 @@
-Print (1 ne 1 -> true | false)
+//Print (1 gr 2 -> true | false)
+(fn x. fn y. fn z. (x ne y -> true | false)) 5 6

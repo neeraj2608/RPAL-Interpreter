@@ -15,6 +15,7 @@ public class AST{
   private Stack<PendingDeltaBody> pendingDeltaBodyStack;
   private boolean standardized;
   private Delta currentDelta;
+  private Delta rootDelta;
 
   public AST(ASTNode node){
     this.root = node;
@@ -281,11 +282,11 @@ public class AST{
    * Creates delta structures from the standardized tree
    * @return the first delta structure (&delta;0)
    */
-  public Delta createDelta(){
+  public Delta createDeltas(){
     pendingDeltaBodyStack = new Stack<PendingDeltaBody>();
     currentDelta = createDelta(root);
     processPendingDeltaStack();
-    return currentDelta;
+    return rootDelta;
   }
 
   private Delta createDelta(ASTNode startBodyNode){
@@ -310,6 +311,9 @@ public class AST{
     d.setCurrentEnv(currentEnv);
     d.setPreviousDelta(currentDelta);
     currentDelta = d;
+    
+    if(startBodyNode==root)
+      rootDelta = currentDelta;
     
     return d;
   }

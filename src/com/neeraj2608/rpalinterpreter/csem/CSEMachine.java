@@ -16,7 +16,7 @@ public class CSEMachine{
   public CSEMachine(AST ast){
     if(!ast.isStandardized())
       throw new EvaluationException("AST has NOT been standardized!");
-    updateCurrentDelta(ast.createDelta());
+    updateCurrentDelta(ast.createDeltas());
     valueStack = new Stack<ASTNode>();
   }
 
@@ -61,9 +61,6 @@ public class CSEMachine{
           break;
         case CONDITIONAL:
           handleConditional(node);
-          break;
-        case BETA:
-          handleBeta();
           break;
         case GAMMA:
           applyGamma();
@@ -193,7 +190,7 @@ public class CSEMachine{
       else
         pushFalseNode();
     else
-      if(type==ASTNodeType.NE)
+      if(type==ASTNodeType.EQ)
         pushFalseNode();
       else
         pushTrueNode();
@@ -206,7 +203,7 @@ public class CSEMachine{
       else
         pushFalseNode();
     else
-      if(type==ASTNodeType.NE)
+      if(type==ASTNodeType.EQ)
         pushFalseNode();
       else
         pushTrueNode();
@@ -219,7 +216,7 @@ public class CSEMachine{
       else
         pushFalseNode();
     else
-      if(type==ASTNodeType.NE)
+      if(type==ASTNodeType.EQ)
         pushFalseNode();
       else
         pushTrueNode();
@@ -313,17 +310,18 @@ public class CSEMachine{
     ASTNode rator = valueStack.pop();
     ASTNode rand = valueStack.pop();
 
-    if(evaluateReservedIdentifiers(rator, rand))
-      return;
-    else if(rator.getType()==ASTNodeType.DELTA){
+    if(rator.getType()==ASTNodeType.DELTA){
       updateCurrentDelta((Delta)rator);
-      //add binding for this delta //RULE 4
+      //RULE 4
+      envInEffect.addMapping(currentDelta.getBoundVar(), rand);
       return;
     }
     else if(rator.getType()==ASTNodeType.TUPLE){
       tupleSelection((Tuple)rator, rand);
       return;
     }
+    else if(evaluateReservedIdentifiers(rator, rand))
+      return;
     else
       throw new EvaluationException("Don't know how to evaluate \""+rator.getValue()+"\"");
   }
@@ -374,8 +372,9 @@ public class CSEMachine{
       case "Null":
         isNullTuple(rand);
         return true;
+      default:
+        return false;
     }
-    return false;
   }
 
   private void checkTypeAndPushTrueOrFalse(ASTNode rand, ASTNodeType type){
@@ -516,32 +515,18 @@ public class CSEMachine{
   
   // RULE 8
   private void handleConditional(ASTNode node){
-    ASTNode betaNode = new ASTNode();
-    betaNode.setType(ASTNodeType.BETA);
-    
-    ASTNode conditionNode = node.getChild();
-    ASTNode thenNode = conditionNode.getSibling();
-    ASTNode elseNode = thenNode.getSibling();
-    
-    controlStack.push(thenNode);
-    controlStack.push(elseNode);
-    controlStack.push(betaNode);
-    controlStack.push(conditionNode);
-  }
-  
-  private void handleBeta(){
     ASTNode conditionNode = valueStack.pop();
     
     if(conditionNode.getType()!=ASTNodeType.TRUE && conditionNode.getType()!=ASTNodeType.FALSE)
       throw new EvaluationException("Expecting a truthvalue; found \""+conditionNode.getValue()+"\"");
     
     if(conditionNode.getType()==ASTNodeType.TRUE){
-      controlStack.pop(); //discard the elseNode
-      valueStack.push(controlStack.pop());
+      ASTNode thenNode = valueStack.pop(); //discard the elseNode
+      valueStack.pop();
+      valueStack.push(thenNode);
     }
     else{
-      valueStack.push(controlStack.pop());
-      controlStack.pop(); //discard the thenNode
+      valueStack.pop(); //discard the thenNode
     }
   }
 
