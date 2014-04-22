@@ -99,7 +99,7 @@ public class CSEMachine{
     ASTNode rand1 = valueStack.pop();
     ASTNode rand2 = valueStack.pop();
     if(rand1.getType()!=ASTNodeType.INTEGER || rand2.getType()!=ASTNodeType.INTEGER)
-      throw new EvaluationException("Expected two integers; was given "+rand1.getValue()+", "+rand2.getValue());
+      throw new EvaluationException("Expected two integers; was given \""+rand1.getValue()+"\", \""+rand2.getValue()+"\"");
     
     ASTNode result = new ASTNode();
     result.setType(ASTNodeType.INTEGER);
@@ -156,20 +156,20 @@ public class CSEMachine{
     
     if(rand1.getType()==ASTNodeType.TRUE || rand1.getType()==ASTNodeType.FALSE){
       if(rand2.getType()!=ASTNodeType.TRUE && rand2.getType()!=ASTNodeType.FALSE)
-        throw new EvaluationException("Cannot compare dissimilar types; was given "+rand1.getValue()+", "+rand2.getValue());
+        throw new EvaluationException("Cannot compare dissimilar types; was given \""+rand1.getValue()+"\", \""+rand2.getValue()+"\"");
       compareTruthValues(rand1, rand2, type);
       return;
     }
     
     if(rand1.getType()!=rand2.getType())
-      throw new EvaluationException("Cannot compare dissimilar types; was given "+rand1.getValue()+", "+rand2.getValue());
+      throw new EvaluationException("Cannot compare dissimilar types; was given \""+rand1.getValue()+"\", \""+rand2.getValue()+"\"");
     
     if(rand1.getType()==ASTNodeType.STRING)
       compareStrings(rand1, rand2, type);
     else if(rand1.getType()==ASTNodeType.INTEGER)
       compareIntegers(rand1, rand2, type);
     else
-      throw new EvaluationException("Don't know how to " + type + " "+rand1.getValue()+", "+rand2.getValue());
+      throw new EvaluationException("Don't know how to " + type + " \""+rand1.getValue()+"\", \""+rand2.getValue()+"\"");
     
   }
   
@@ -222,7 +222,7 @@ public class CSEMachine{
       return;
     }
     
-    throw new EvaluationException("Don't know how to " + type + " "+rand1.getValue()+", "+rand2.getValue());
+    throw new EvaluationException("Don't know how to " + type + " \""+rand1.getValue()+"\", \""+rand2.getValue()+"\"");
   }
 
   private void orAndTruthValues(ASTNode rand1, ASTNode rand2, ASTNodeType type){
@@ -246,20 +246,33 @@ public class CSEMachine{
       case NOT:
         not();
         return true;
+      case NEG:
+        neg();
+        return true;
       default:
         return false;
     }
   }
-
+  
   private void not(){
     ASTNode rand = valueStack.pop();
     if(rand.getType()!=ASTNodeType.TRUE && rand.getType()!=ASTNodeType.FALSE)
-      throw new EvaluationException("Expecting a truthvalue; was given "+rand.getValue());
+      throw new EvaluationException("Expecting a truthvalue; was given \""+rand.getValue()+"\"");
     
     if(rand.getType()==ASTNodeType.TRUE)
       pushFalseNode();
     else
       pushTrueNode();
+    
+  }
+
+  private void neg(){
+    ASTNode rand = valueStack.pop();
+    if(rand.getType()!=ASTNodeType.INTEGER)
+      throw new EvaluationException("Expecting a truthvalue; was given \""+rand.getValue()+"\"");
+    
+    rand.setValue(Integer.toString(-1*Integer.parseInt(rand.getValue())));
+    valueStack.push(rand);
     
   }
 
@@ -276,7 +289,7 @@ public class CSEMachine{
       return;
     }
     else
-      throw new EvaluationException("Don't know how to evaluate "+rator.getValue());
+      throw new EvaluationException("Don't know how to evaluate \""+rator.getValue()+"\"");
   }
 
   private boolean evaluateReservedIdentifiers(ASTNode rator, ASTNode rand){
@@ -317,8 +330,11 @@ public class CSEMachine{
         itos(rand);
         return true;
       case "Istuple":
+        //TODO
       case "Order":
+        //TODO
       case "Null":
+        //TODO
         return true;
     }
     return false;
@@ -347,7 +363,7 @@ public class CSEMachine{
 
   private void stem(ASTNode rand){
     if(rand.getType()!=ASTNodeType.STRING)
-      throw new EvaluationException("Expected a string; was given "+rand.getValue());
+      throw new EvaluationException("Expected a string; was given \""+rand.getValue()+"\"");
     if(rand.getValue().length()>1)
       rand.setValue(rand.getValue().substring(0,1));
     else
@@ -357,7 +373,7 @@ public class CSEMachine{
 
   private void stern(ASTNode rand){
     if(rand.getType()!=ASTNodeType.STRING)
-      throw new EvaluationException("Expected a string, not "+rand.getValue());
+      throw new EvaluationException("Expected a string; was given \""+rand.getValue()+"\"");
     if(rand.getValue().length()>1)
       rand.setValue(rand.getValue().substring(1));
     else
@@ -369,7 +385,7 @@ public class CSEMachine{
     controlStack.pop();
     ASTNode rand2 = valueStack.pop();
     if(rand1.getType()!=ASTNodeType.STRING || rand2.getType()!=ASTNodeType.STRING)
-      throw new EvaluationException("Expected two strings; was given "+rand1.getValue()+", "+rand2.getValue());
+      throw new EvaluationException("Expected two strings; was given \""+rand1.getValue()+"\", \""+rand2.getValue()+"\"");
 
     ASTNode result = new ASTNode();
     result.setType(ASTNodeType.STRING);
@@ -379,7 +395,7 @@ public class CSEMachine{
 
   private void itos(ASTNode rand){
     if(rand.getType()!=ASTNodeType.INTEGER)
-      throw new EvaluationException("Expected an integer; was given "+rand.getValue());
+      throw new EvaluationException("Expected an integer; was given \""+rand.getValue()+"\"");
 
     rand.setType(ASTNodeType.STRING); //we store all values internally as strings, so nothing to do
     valueStack.push(rand);
@@ -410,6 +426,7 @@ public class CSEMachine{
       case "Null":
       case "Print":
       case "print": //typos
+      case "neg":
         return true;
     }
     return false;

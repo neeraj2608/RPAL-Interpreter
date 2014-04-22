@@ -26,7 +26,7 @@ public class Environment{
     Map<String, ASTNode> map = nameValueMap;
     while(map!=null){
       retValue = map.get(key);
-      if(retValue!=null)
+      if(retValue!=null || parent==null)
         break;
       map = parent.nameValueMap;
     }

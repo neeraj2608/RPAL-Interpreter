@@ -1,1 +1,1 @@
-Print (not (true or false))
+Print (- 2)
