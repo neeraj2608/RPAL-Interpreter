@@ -63,7 +63,8 @@ public enum ASTNodeType{
   
   //For evaluation
   DELTA(""),
-  TUPLE("");
+  TUPLE(""),
+  BETA("");
   
   //Bar?
   

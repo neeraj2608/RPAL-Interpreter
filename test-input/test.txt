@@ -1,1 +1,1 @@
-Print (nil aug (1,2) 1)
+Print (1 ne 1 -> true | false)

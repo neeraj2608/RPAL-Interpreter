@@ -59,6 +59,12 @@ public class CSEMachine{
         case TAU:
           createTuple(node);
           break;
+        case CONDITIONAL:
+          handleConditional(node);
+          break;
+        case BETA:
+          handleBeta();
+          break;
         case GAMMA:
           applyGamma();
           break;
@@ -187,7 +193,7 @@ public class CSEMachine{
       else
         pushFalseNode();
     else
-      if(type==ASTNodeType.EQ)
+      if(type==ASTNodeType.NE)
         pushFalseNode();
       else
         pushTrueNode();
@@ -200,7 +206,7 @@ public class CSEMachine{
       else
         pushFalseNode();
     else
-      if(type==ASTNodeType.EQ)
+      if(type==ASTNodeType.NE)
         pushFalseNode();
       else
         pushTrueNode();
@@ -213,7 +219,7 @@ public class CSEMachine{
       else
         pushFalseNode();
     else
-      if(type==ASTNodeType.EQ)
+      if(type==ASTNodeType.NE)
         pushFalseNode();
       else
         pushTrueNode();
@@ -506,6 +512,37 @@ public class CSEMachine{
     }
     tupleNode.setChild(childNode);
     valueStack.push(tupleNode);
+  }
+  
+  // RULE 8
+  private void handleConditional(ASTNode node){
+    ASTNode betaNode = new ASTNode();
+    betaNode.setType(ASTNodeType.BETA);
+    
+    ASTNode conditionNode = node.getChild();
+    ASTNode thenNode = conditionNode.getSibling();
+    ASTNode elseNode = thenNode.getSibling();
+    
+    controlStack.push(thenNode);
+    controlStack.push(elseNode);
+    controlStack.push(betaNode);
+    controlStack.push(conditionNode);
+  }
+  
+  private void handleBeta(){
+    ASTNode conditionNode = valueStack.pop();
+    
+    if(conditionNode.getType()!=ASTNodeType.TRUE && conditionNode.getType()!=ASTNodeType.FALSE)
+      throw new EvaluationException("Expecting a truthvalue; found \""+conditionNode.getValue()+"\"");
+    
+    if(conditionNode.getType()==ASTNodeType.TRUE){
+      controlStack.pop(); //discard the elseNode
+      valueStack.push(controlStack.pop());
+    }
+    else{
+      valueStack.push(controlStack.pop());
+      controlStack.pop(); //discard the thenNode
+    }
   }
 
   private int getNumChildren(ASTNode node){

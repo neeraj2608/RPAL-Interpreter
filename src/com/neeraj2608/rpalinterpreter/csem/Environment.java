@@ -32,7 +32,7 @@ public class Environment{
     }
     
     if(retValue==null)
-      throw new EvaluationException("Identifier "+key+" not found in environment");
+      throw new EvaluationException("Undeclared identifier \""+key+"\"");
     
     return retValue;
   }
