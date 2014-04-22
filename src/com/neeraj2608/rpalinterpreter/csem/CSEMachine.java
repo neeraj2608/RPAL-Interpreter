@@ -311,7 +311,11 @@ public class CSEMachine{
       return;
     else if(rator.getType()==ASTNodeType.DELTA){
       updateCurrentDelta((Delta)rator);
-      //add binding for this delta
+      //add binding for this delta //RULE 4
+      return;
+    }
+    else if(rator.getType()==ASTNodeType.TUPLE){
+      tupleSelection((Tuple)rator, rand);
       return;
     }
     else
@@ -448,6 +452,28 @@ public class CSEMachine{
     else
       pushFalseNode();
   }
+
+  // RULE 10
+  private void tupleSelection(Tuple rator, ASTNode rand){
+    if(rand.getType()!=ASTNodeType.INTEGER)
+      throw new EvaluationException("Non-integer tuple selection with \""+rand.getValue()+"\"");
+    
+    ASTNode result = getNthTupleChild(rator, Integer.parseInt(rand.getValue()));
+    if(result==null)
+      throw new EvaluationException("Tuple selection index "+rand.getValue()+" out of bounds");
+      
+    valueStack.push(result);
+  }
+
+  private ASTNode getNthTupleChild(Tuple rator, int n){
+    ASTNode childNode = rator.getChild();
+    for(int i=1;i<n;++i){ //tuple selection index starts at 1
+      if(childNode==null)
+        break;
+      childNode = childNode.getSibling();
+    }
+    return childNode;
+  }
   
   private void handleIdentifiers(ASTNode node){
     if(isReservedIdentifier(node.getValue()))
@@ -456,6 +482,7 @@ public class CSEMachine{
       valueStack.push(envInEffect.lookup(node.getValue()));
   }
 
+  //RULE 9
   private void createTuple(ASTNode node){
     int numChildren = getNumChildren(node);
     Tuple tupleNode = new Tuple();

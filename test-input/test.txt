@@ -1,1 +1,1 @@
-Print (Istuple ((3,4) aug (1,2)))
+Print (nil aug (1,2) 1)
