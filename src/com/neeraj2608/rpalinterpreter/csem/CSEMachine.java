@@ -55,6 +55,7 @@ public class CSEMachine{
         case IDENTIFIER:
           handleIdentifiers(node);
           break;
+        case NIL:
         case TAU:
           createTuple(node);
           break;
@@ -92,6 +93,9 @@ public class CSEMachine{
       case OR:
       case AND:
         binaryLogicalOrAndOp(rator.getType());
+        return true;
+      case AUG:
+        augTuples();
         return true;
       default:
         return false;
@@ -243,6 +247,25 @@ public class CSEMachine{
     }
   }
   
+  private void augTuples(){
+    ASTNode rand1 = valueStack.pop();
+    ASTNode rand2 = valueStack.pop();
+    
+    if(rand1.getType()!=ASTNodeType.TUPLE)
+      throw new EvaluationException("Cannot augment a non-tuple \""+rand1.getValue()+"\"");
+    
+    ASTNode childNode = rand1.getChild();
+    if(childNode==null)
+      rand1.setChild(rand2);
+    else{
+      while(childNode.getSibling()!=null)
+        childNode = childNode.getSibling();
+      childNode.setSibling(rand2);
+    }
+    
+    valueStack.push(rand1);
+  }
+  
   // RULE 7
   private boolean applyUnaryOperation(ASTNode rator){
     switch(rator.getType()){
@@ -312,9 +335,6 @@ public class CSEMachine{
       case "Istuple":
         checkTypeAndPushTrueOrFalse(rand, ASTNodeType.TUPLE);
         return true;
-      case "Null":
-        checkTypeAndPushTrueOrFalse(rand, ASTNodeType.NIL);
-        return true;
       case "Istruthvalue":
         if(rand.getType()==ASTNodeType.TRUE||rand.getType()==ASTNodeType.FALSE)
           pushTrueNode();
@@ -340,6 +360,9 @@ public class CSEMachine{
         return true;
       case "Order":
         order(rand);
+        return true;
+      case "Null":
+        isNullTuple(rand);
         return true;
     }
     return false;
@@ -416,6 +439,16 @@ public class CSEMachine{
     valueStack.push(result);
   }
   
+  private void isNullTuple(ASTNode rand){
+    if(rand.getType()!=ASTNodeType.TUPLE)
+      throw new EvaluationException("Expected a tuple; was given \""+rand.getValue()+"\"");
+    
+    if(getNumChildren(rand)==0)
+      pushTrueNode();
+    else
+      pushFalseNode();
+  }
+  
   private void handleIdentifiers(ASTNode node){
     if(isReservedIdentifier(node.getValue()))
       valueStack.push(node);
@@ -425,16 +458,14 @@ public class CSEMachine{
 
   private void createTuple(ASTNode node){
     int numChildren = getNumChildren(node);
-    ASTNode tupleNode = new ASTNode();
-    tupleNode.setType(ASTNodeType.TUPLE);
+    Tuple tupleNode = new Tuple();
+    if(numChildren==0){
+      valueStack.push(tupleNode);
+      return;
+    }
+    
     ASTNode childNode = null, tempNode = null;
-    String value = "(";
     for(int i=0;i<numChildren;++i){
-      if(i==numChildren-1)
-        value += valueStack.peek().getValue() + ")";
-      else
-        value += valueStack.peek().getValue() + ", ";
-      
       if(childNode==null)
         childNode = valueStack.pop();
       else if(tempNode==null){
@@ -446,7 +477,6 @@ public class CSEMachine{
         tempNode = tempNode.getSibling();
       }
     }
-    tupleNode.setValue(value);
     tupleNode.setChild(childNode);
     valueStack.push(tupleNode);
   }
