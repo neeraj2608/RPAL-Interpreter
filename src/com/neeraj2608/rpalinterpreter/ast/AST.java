@@ -1,5 +1,6 @@
 package com.neeraj2608.rpalinterpreter.ast;
 
+import java.util.ArrayDeque;
 import java.util.Stack;
 
 import com.neeraj2608.rpalinterpreter.csem.Delta;
@@ -12,7 +13,7 @@ import com.neeraj2608.rpalinterpreter.csem.Environment;
 public class AST{
   private ASTNode root;
   private Environment currentEnv;
-  private Stack<PendingDeltaBody> pendingDeltaBodyStack;
+  private ArrayDeque<PendingDeltaBody> pendingDeltaBodyQueue;
   private boolean standardized;
   private Delta currentDelta;
   private Delta rootDelta;
@@ -284,7 +285,7 @@ public class AST{
    * @return the first delta structure (&delta;0)
    */
   public Delta createDeltas(){
-    pendingDeltaBodyStack = new Stack<PendingDeltaBody>();
+    pendingDeltaBodyQueue = new ArrayDeque<PendingDeltaBody>();
     deltaIndex = 0;
     currentDelta = createDelta(root);
     processPendingDeltaStack();
@@ -292,25 +293,14 @@ public class AST{
   }
 
   private Delta createDelta(ASTNode startBodyNode){
-    // RULE 2: the environments created here are just placeholders. We'll only populate them when
-    //         we evaluate the program in the CSEM
-    if(currentEnv==null)
-      currentEnv = new Environment(); //primitive environment
-    else{
-      Environment newCurrentEnv = new Environment();
-      newCurrentEnv.setParent(currentEnv); //new environment links back to previous one
-      currentEnv = newCurrentEnv;
-    }
-    
     //we'll create this delta's body later
     PendingDeltaBody pendingDelta = new PendingDeltaBody();
     pendingDelta.startNode = startBodyNode;
     pendingDelta.body = new Stack<ASTNode>();
-    pendingDeltaBodyStack.push(pendingDelta);
+    pendingDeltaBodyQueue.add(pendingDelta);
     
     Delta d = new Delta();
     d.setBody(pendingDelta.body);
-    d.setCurrentEnv(currentEnv);
     d.setIndex(deltaIndex++);
     currentDelta = d;
     
@@ -321,8 +311,8 @@ public class AST{
   }
 
   private void processPendingDeltaStack(){
-    while(!pendingDeltaBodyStack.isEmpty()){
-      PendingDeltaBody pendingDeltaBody = pendingDeltaBodyStack.pop();
+    while(!pendingDeltaBodyQueue.isEmpty()){
+      PendingDeltaBody pendingDeltaBody = pendingDeltaBodyQueue.pop();
       buildDeltaBody(pendingDeltaBody.startNode, pendingDeltaBody.body);
     }
   }

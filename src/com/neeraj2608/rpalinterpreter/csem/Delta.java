@@ -9,9 +9,7 @@ import com.neeraj2608.rpalinterpreter.ast.ASTNodeType;
 
 public class Delta extends ASTNode{
   private List<String> boundVars;
-  private Environment currentEnv; //the environment in which this delta's bindings live
-                                  //refers back (via the parent field) to the environment
-                                  //in effect when this delta was created
+  private Environment linkedEnv; //environment in effect when this Delta was pushed on to the value stack
   private Stack<ASTNode> body;
   private int index;
   
@@ -34,14 +32,6 @@ public class Delta extends ASTNode{
     boundVars.add(boundVar);
   }
   
-  public Environment getCurrentEnv(){
-    return currentEnv;
-  }
-  
-  public void setCurrentEnv(Environment currentEnv){
-    this.currentEnv = currentEnv;
-  }
-  
   public Stack<ASTNode> getBody(){
     return body;
   }
@@ -52,5 +42,13 @@ public class Delta extends ASTNode{
 
   public void setIndex(int index){
     this.index = index;
+  }
+
+  public Environment getLinkedEnv(){
+    return linkedEnv;
+  }
+
+  public void setLinkedEnv(Environment linkedEnv){
+    this.linkedEnv = linkedEnv;
   }
 }

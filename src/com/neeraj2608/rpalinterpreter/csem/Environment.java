@@ -24,11 +24,10 @@ public class Environment{
   /**
    * Tries to find the binding of the given key in the mappings of this Environment's
    * inheritance hierarchy, starting with the Environment this method is invoked on.
-   * Throws a runtime exception if the key was not found anywhere in this Environment's
-   * inheritance hierarchy. 
    * 
    * @param key key the mapping of which to find
    * @return ASTNode that corresponds to the mapping of the key passed in as an argument
+   *         or null if no mapping was found
    */
   public ASTNode lookup(String key){
     ASTNode retValue = null;
@@ -42,7 +41,7 @@ public class Environment{
     if(parent!=null)
       return parent.lookup(key);
     else
-      throw new EvaluationException("Undeclared identifier \""+key+"\"");
+      return null;
   }
   
   public void addMapping(String key, ASTNode value){

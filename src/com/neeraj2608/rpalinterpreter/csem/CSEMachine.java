@@ -1,7 +1,6 @@
 package com.neeraj2608.rpalinterpreter.csem;
 
 import java.util.Stack;
-
 import com.neeraj2608.rpalinterpreter.ast.AST;
 import com.neeraj2608.rpalinterpreter.ast.ASTNode;
 import com.neeraj2608.rpalinterpreter.ast.ASTNodeType;
@@ -15,23 +14,30 @@ public class CSEMachine{
     if(!ast.isStandardized())
       throw new EvaluationException("AST has NOT been standardized!");
     rootDelta = ast.createDeltas();
+    rootDelta.setLinkedEnv(new Environment()); //primitive environment
     valueStack = new Stack<ASTNode>();
   }
 
   public String evaluateProgram(){
-    processControlStack(rootDelta);
+    processControlStack(rootDelta, rootDelta.getLinkedEnv());
     if(valueStack.peek().getType()==ASTNodeType.PRINT)
       return valueStack.pop().getValue(); //RULE 5
     else
       return "";
   }
 
-  private void processControlStack(Delta currentDelta){
-    while(!currentDelta.getBody().isEmpty())
-      processCurrentNode(currentDelta, currentDelta.getBody().pop());
+  private void processControlStack(Delta currentDelta, Environment currentEnv){
+    //create a new control stack and add all of the delta's body to it so that the delta's body isn't
+    //modified whenever the control stack is popped in all the functions below
+    Stack<ASTNode> controlStack = new Stack<ASTNode>();
+    controlStack.addAll(currentDelta.getBody());
+    
+    while(!controlStack.isEmpty())
+      processCurrentNode(currentDelta, currentEnv, controlStack);
   }
 
-  private void processCurrentNode(Delta currentDelta, ASTNode node){
+  private void processCurrentNode(Delta currentDelta, Environment currentEnv, Stack<ASTNode> currentControlStack){
+    ASTNode node = currentControlStack.pop();
     if(applyBinaryOperation(node))
       return;
     else if(applyUnaryOperation(node))
@@ -39,7 +45,7 @@ public class CSEMachine{
     else{
       switch(node.getType()){
         case IDENTIFIER:
-          handleIdentifiers(currentDelta, node);
+          handleIdentifiers(node, currentEnv);
           break;
         case NIL:
         case TAU:
@@ -49,7 +55,11 @@ public class CSEMachine{
           handleConditional(node);
           break;
         case GAMMA:
-          applyGamma(currentDelta, node);
+          applyGamma(currentDelta, node, currentEnv, currentControlStack);
+          break;
+        case DELTA:
+          ((Delta)node).setLinkedEnv(currentEnv); //RULE 2
+          valueStack.push(node);
           break;
         default:
           // Although we use ASTNodes, a CSEM will only ever see a subset of all possible ASTNodeTypes.
@@ -292,15 +302,23 @@ public class CSEMachine{
   }
 
   //RULE 3
-  private void applyGamma(Delta currentDelta, ASTNode node){
+  private void applyGamma(Delta currentDelta, ASTNode node, Environment currentEnv, Stack<ASTNode> currentControlStack){
     ASTNode rator = valueStack.pop();
     ASTNode rand = valueStack.pop();
 
     if(rator.getType()==ASTNodeType.DELTA){
       Delta nextDelta = (Delta) rator;
+      
+      //Delta has a link to the environment in effect when it is pushed on to the value stack (search
+      //for 'RULE 2' in this file to see where it's done)
+      //We construct a new environment here that will contain all the bindings (single or multiple)
+      //required by this Delta. This new environment will link back to the environment carried by the Delta.
+      Environment newEnv = new Environment();
+      newEnv.setParent(nextDelta.getLinkedEnv());
+      
       //RULE 4
       if(nextDelta.getBoundVars().size()==1){
-        nextDelta.getCurrentEnv().addMapping(nextDelta.getBoundVars().get(0), rand);
+        newEnv.addMapping(nextDelta.getBoundVars().get(0), rand);
       }
       //RULE 11
       else{
@@ -308,23 +326,24 @@ public class CSEMachine{
           throw new EvaluationException("Expected a tuple; was given \""+rand.getValue()+"\"");
         
         for(int i = 0; i < nextDelta.getBoundVars().size(); i++){
-          nextDelta.getCurrentEnv().addMapping(nextDelta.getBoundVars().get(i), getNthTupleChild((Tuple)rand, i+1));
+          newEnv.addMapping(nextDelta.getBoundVars().get(i), getNthTupleChild((Tuple)rand, i+1)); //+ 1 coz tuple indexing starts at 1
         }
       }
-      processControlStack(nextDelta);
+      
+      processControlStack(nextDelta, newEnv);
       return;
     }
     else if(rator.getType()==ASTNodeType.TUPLE){
       tupleSelection((Tuple)rator, rand);
       return;
     }
-    else if(evaluateReservedIdentifiers(currentDelta, rator, rand))
+    else if(evaluateReservedIdentifiers(rator, rand, currentControlStack))
       return;
     else
       throw new EvaluationException("Don't know how to evaluate \""+rator.getValue()+"\"");
   }
 
-  private boolean evaluateReservedIdentifiers(Delta currentDelta, ASTNode rator, ASTNode rand){
+  private boolean evaluateReservedIdentifiers(ASTNode rator, ASTNode rand, Stack<ASTNode> currentControlStack){
     switch(rator.getValue()){
       case "Isinteger":
         checkTypeAndPushTrueOrFalse(rand, ASTNodeType.INTEGER);
@@ -355,7 +374,7 @@ public class CSEMachine{
         return true;
       case "Conc":
       case "conc": //typos
-        conc(currentDelta, rand);
+        conc(rand, currentControlStack);
         return true;
       case "Print":
       case "print": //typos
@@ -417,8 +436,8 @@ public class CSEMachine{
     valueStack.push(rand);
   }
 
-  private void conc(Delta currentDelta,ASTNode rand1){
-    currentDelta.getBody().pop();
+  private void conc(ASTNode rand1, Stack<ASTNode> currentControlStack){
+    currentControlStack.pop();
     ASTNode rand2 = valueStack.pop();
     if(rand1.getType()!=ASTNodeType.STRING || rand2.getType()!=ASTNodeType.STRING)
       throw new EvaluationException("Expected two strings; was given \""+rand1.getValue()+"\", \""+rand2.getValue()+"\"");
@@ -485,11 +504,13 @@ public class CSEMachine{
     return childNode;
   }
 
-  private void handleIdentifiers(Delta currentDelta, ASTNode node){
-    if(isReservedIdentifier(node.getValue()))
+  private void handleIdentifiers(ASTNode node, Environment currentEnv){
+    if(currentEnv.lookup(node.getValue())!=null) // RULE 1
+      valueStack.push(currentEnv.lookup(node.getValue()));
+    else if(isReservedIdentifier(node.getValue()))
       valueStack.push(node);
-    else // RULE 1
-      valueStack.push(currentDelta.getCurrentEnv().lookup(node.getValue()));
+    else
+      throw new EvaluationException("Undeclared identifier \""+node.getValue()+"\"");
   }
 
   //RULE 9
