@@ -48,12 +48,4 @@ public class Environment{
   public void addMapping(String key, ASTNode value){
     nameValueMap.put(key, value);
   }
-
-  public String printMappings(){
-    String retValue = "";
-    for(String key: nameValueMap.keySet()){
-      retValue += " "+key+"="+nameValueMap.get(key).getValue();
-    }
-    return retValue+((parent==null)?"":parent.printMappings());
-  }
 }

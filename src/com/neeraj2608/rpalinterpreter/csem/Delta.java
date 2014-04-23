@@ -13,6 +13,7 @@ public class Delta extends ASTNode{
                                   //refers back (via the parent field) to the environment
                                   //in effect when this delta was created
   private Stack<ASTNode> body;
+  private int index;
   
   public Delta(){
     setType(ASTNodeType.DELTA);
@@ -22,19 +23,7 @@ public class Delta extends ASTNode{
   //used if the program evaluation results in a partial application
   @Override
   public String getValue(){
-    return "[lambda closure: BOUND:"+currentEnv.printMappings()+"; FREE:"+printFreeVars()+"]";
-  }
-
-  private String printFreeVars(){
-    String retValue = "";
-    for(String boundVar: boundVars){
-      try{
-        currentEnv.lookup(boundVar);
-      }catch(EvaluationException e){
-        retValue += " " + boundVar;
-      }
-    }
-    return retValue;
+    return "[lambda closure: "+boundVars.get(0)+": "+index+"]";
   }
 
   public List<String> getBoundVars(){
@@ -59,5 +48,9 @@ public class Delta extends ASTNode{
   
   public void setBody(Stack<ASTNode> body){
     this.body = body;
+  }
+
+  public void setIndex(int index){
+    this.index = index;
   }
 }

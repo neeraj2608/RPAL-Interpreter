@@ -16,6 +16,7 @@ public class AST{
   private boolean standardized;
   private Delta currentDelta;
   private Delta rootDelta;
+  private int deltaIndex;
 
   public AST(ASTNode node){
     this.root = node;
@@ -284,6 +285,7 @@ public class AST{
    */
   public Delta createDeltas(){
     pendingDeltaBodyStack = new Stack<PendingDeltaBody>();
+    deltaIndex = 0;
     currentDelta = createDelta(root);
     processPendingDeltaStack();
     return rootDelta;
@@ -309,6 +311,7 @@ public class AST{
     Delta d = new Delta();
     d.setBody(pendingDelta.body);
     d.setCurrentEnv(currentEnv);
+    d.setIndex(deltaIndex++);
     currentDelta = d;
     
     if(startBodyNode==root)
