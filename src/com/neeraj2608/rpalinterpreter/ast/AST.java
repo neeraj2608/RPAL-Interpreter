@@ -309,7 +309,6 @@ public class AST{
     Delta d = new Delta();
     d.setBody(pendingDelta.body);
     d.setCurrentEnv(currentEnv);
-    d.setPreviousDelta(currentDelta);
     currentDelta = d;
     
     if(startBodyNode==root)
