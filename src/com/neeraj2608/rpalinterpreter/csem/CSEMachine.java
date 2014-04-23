@@ -27,7 +27,10 @@ public class CSEMachine{
 
   public String evaluateProgram(){
     processControlStack();
-    return valueStack.pop().getValue(); //RULE 5
+    if(valueStack.peek().getType()==ASTNodeType.PRINT)
+      return valueStack.pop().getValue(); //RULE 5
+    else
+      return "";
   }
 
   private void initControlStackAndEnvironment(){
@@ -372,6 +375,7 @@ public class CSEMachine{
         return true;
       case "Print":
       case "print": //typos
+        rand.setType(ASTNodeType.PRINT);
         valueStack.push(rand);
         return true;
       case "ItoS":
