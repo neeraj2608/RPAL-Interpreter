@@ -21,10 +21,11 @@ SOURCEFILES := \
                com/neeraj2608/rpalinterpreter/ast/StandardizeException.java \
                com/neeraj2608/rpalinterpreter/ast/ASTNodeType.java \
                com/neeraj2608/rpalinterpreter/ast/ASTNode.java \
-               com/neeraj2608/rpalinterpreter/ast/AST.java \
                com/neeraj2608/rpalinterpreter/csem/EvaluationException.java \
                com/neeraj2608/rpalinterpreter/csem/Environment.java \
                com/neeraj2608/rpalinterpreter/csem/Delta.java \
+               com/neeraj2608/rpalinterpreter/ast/AST.java \
+               com/neeraj2608/rpalinterpreter/csem/Tuple.java \
                com/neeraj2608/rpalinterpreter/csem/CSEMachine.java \
                com/neeraj2608/rpalinterpreter/parser/ParseException.java \
                com/neeraj2608/rpalinterpreter/parser/Parser.java \
