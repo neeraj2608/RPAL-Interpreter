@@ -1,12 +1,14 @@
 package com.neeraj2608.rpalinterpreter.csem;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Stack;
 
 import com.neeraj2608.rpalinterpreter.ast.ASTNode;
 import com.neeraj2608.rpalinterpreter.ast.ASTNodeType;
 
 public class Delta extends ASTNode{
-  private String boundVar;
+  private List<String> boundVars;
   private Environment currentEnv; //the environment in which this delta's bindings live
                                   //refers back (via the parent field) to the environment
                                   //in effect when this delta was created
@@ -15,52 +17,33 @@ public class Delta extends ASTNode{
   
   public Delta(){
     setType(ASTNodeType.DELTA);
-  }
-  
-  public String getBoundVar(){
-    return boundVar;
+    boundVars = new ArrayList<String>();
   }
   
   //used if the program evaluation results in a partial application
   @Override
   public String getValue(){
-    return "[lambda closure:"+printBody(body.firstElement())+" "+boundVar+" free]";
+    return "[lambda closure: BOUND:"+currentEnv.printMappings()+"; FREE:"+printFreeVars()+"]";
   }
-  
-  private String printBody(ASTNode node){
+
+  private String printFreeVars(){
     String retValue = "";
-    if(node==null)
-      return retValue;
-    
-    ASTNode childNode = node.getChild();
-    
-    if(childNode==null)
-      return getASTNodeDetails(node);
-    
-    while(childNode!=null){
-      retValue += printBody(childNode);
-      if(childNode.getSibling()!=null)
-        retValue += getASTNodeDetails(node);
-      childNode = childNode.getSibling();
+    for(String boundVar: boundVars){
+      try{
+        currentEnv.lookup(boundVar);
+      }catch(EvaluationException e){
+        retValue += " " + boundVar;
+      }
     }
-    
     return retValue;
   }
 
-  private String getASTNodeDetails(ASTNode node){
-    if(node.getType() == ASTNodeType.IDENTIFIER){
-      try{
-        return " "+node.getValue()+"="+currentEnv.lookup(node.getValue()).getValue()+",";
-      }
-      catch(EvaluationException e){
-        return " "+node.getValue()+",";
-      }
-    }
-    return "";
+  public List<String> getBoundVars(){
+    return boundVars;
   }
   
-  public void setBoundVar(String boundVar){
-    this.boundVar = boundVar;
+  public void addBoundVars(String boundVar){
+    boundVars.add(boundVar);
   }
   
   public Environment getCurrentEnv(){

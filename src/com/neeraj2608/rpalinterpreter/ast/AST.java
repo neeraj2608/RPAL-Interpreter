@@ -328,7 +328,16 @@ public class AST{
   private void buildDeltaBody(ASTNode node, Stack<ASTNode> body){
     if(node.getType()==ASTNodeType.LAMBDA){ //create a new delta
       Delta d = createDelta(node.getChild().getSibling()); //the new delta's body starts at the right child of the lambda
-      d.setBoundVar(node.getChild().getValue()); //the left child of the lambda is the bound variable
+      if(node.getChild().getType()==ASTNodeType.COMMA){
+        ASTNode commaNode = node.getChild();
+        ASTNode childNode = commaNode.getChild();
+        while(childNode!=null){
+          d.addBoundVars(childNode.getValue());
+          childNode = childNode.getSibling();
+        }
+      }
+      else
+        d.addBoundVars(node.getChild().getValue()); //the left child of the lambda is the bound variable
       body.push(d); //add this new delta to the existing delta's body
       return;
     }

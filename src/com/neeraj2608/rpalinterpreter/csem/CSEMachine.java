@@ -63,7 +63,7 @@ public class CSEMachine{
           handleConditional(node);
           break;
         case GAMMA:
-          applyGamma();
+          applyGamma(node);
           break;
         default:
           // Although we use ASTNodes, a CSEM will only ever see a subset of all possible ASTNodeTypes.
@@ -306,14 +306,25 @@ public class CSEMachine{
   }
 
   //RULE 3
-  private void applyGamma(){
+  private void applyGamma(ASTNode node){
     ASTNode rator = valueStack.pop();
     ASTNode rand = valueStack.pop();
 
     if(rator.getType()==ASTNodeType.DELTA){
-      updateCurrentDelta((Delta)rator);
-      //RULE 4
-      envInEffect.addMapping(currentDelta.getBoundVar(), rand);
+      Delta nextDelta = (Delta) rator;
+      //RULE 4, RULE 11
+      currentDelta.getBody().push(node); //push these nodes back. we'll pop them in the for loop below. pushing them for the moment makes that for loop much cleaner.
+      valueStack.push(rand); //push these nodes back. we'll pop them in the for loop below. pushing them for the moment makes that for loop much cleaner.
+      for(String boundVar: nextDelta.getBoundVars()){
+        if(valueStack.isEmpty()){
+          valueStack.push(nextDelta);
+          return;
+        }
+        currentDelta.getBody().pop();
+        rand = valueStack.pop();
+        nextDelta.getCurrentEnv().addMapping(boundVar, rand);
+      }
+      updateCurrentDelta(nextDelta);
       return;
     }
     else if(rator.getType()==ASTNodeType.TUPLE){
