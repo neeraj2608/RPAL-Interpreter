@@ -65,12 +65,9 @@ public enum ASTNodeType{
   BETA(""),
   DELTA(""),
   ETA(""),
-  TUPLE(""),
-  PRINT("");
+  TUPLE("");
   
-  //Bar?
-  
-  private String printName;
+  private String printName; //used for printing AST representation
   
   private ASTNodeType(String name){
     printName = name;

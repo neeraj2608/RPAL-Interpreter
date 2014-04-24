@@ -84,10 +84,7 @@ public class P2{
 
   private static void evaluateST(AST ast){
     CSEMachine csem = new CSEMachine(ast);
-    String evaluationResult = csem.evaluateProgram();
-    evaluationResult = evaluationResult.replace("\\t", "\t");
-    evaluationResult = evaluationResult.replace("\\n", "\n");
-    System.out.println(evaluationResult);
+    csem.evaluateProgram();
   }
 
   private static void printInputListing(String fileName){

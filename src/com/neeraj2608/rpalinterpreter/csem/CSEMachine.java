@@ -18,12 +18,8 @@ public class CSEMachine{
     valueStack = new Stack<ASTNode>();
   }
 
-  public String evaluateProgram(){
+  public void evaluateProgram(){
     processControlStack(rootDelta, rootDelta.getLinkedEnv());
-    if(valueStack.peek().getType()==ASTNodeType.PRINT)
-      return valueStack.pop().getValue(); //RULE 5
-    else
-      return "";
   }
 
   private void processControlStack(Delta currentDelta, Environment currentEnv){
@@ -400,8 +396,8 @@ public class CSEMachine{
         return true;
       case "Print":
       case "print": //typos
-        rand.setType(ASTNodeType.PRINT);
-        valueStack.push(rand);
+        printNodeValue(rand);
+        pushDummyNode();
         return true;
       case "ItoS":
         itos(rand);
@@ -430,11 +426,17 @@ public class CSEMachine{
     trueNode.setValue("true");
     valueStack.push(trueNode);
   }
-
+  
   private void pushFalseNode(){
     ASTNode falseNode = new ASTNode();
     falseNode.setType(ASTNodeType.FALSE);
     falseNode.setValue("false");
+    valueStack.push(falseNode);
+  }
+
+  private void pushDummyNode(){
+    ASTNode falseNode = new ASTNode();
+    falseNode.setType(ASTNodeType.DUMMY);
     valueStack.push(falseNode);
   }
 
@@ -589,6 +591,13 @@ public class CSEMachine{
       childNode = childNode.getSibling();
     }
     return numChildren;
+  }
+  
+  private void printNodeValue(ASTNode rand){
+    String evaluationResult = rand.getValue();
+    evaluationResult = evaluationResult.replace("\\t", "\t");
+    evaluationResult = evaluationResult.replace("\\n", "\n");
+    System.out.print(evaluationResult);
   }
 
   // Note how this list is different from the one defined in Scanner.java
