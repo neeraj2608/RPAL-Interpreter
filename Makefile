@@ -9,7 +9,7 @@ SRCDIR = src
 .SUFFIXES: .java .class
 
 $(CLASSDIR)/%.class : $(SRCDIR)/%.java
-	@echo -n ">>> Compiling $@..."
+	@echo -n ">>> Compiling $<..."
 	@$(JC) $(JFLAGS) -sourcepath $(SRCDIR) -cp $(CLASSDIR) -d $(CLASSDIR) $<
 	@echo " done."
 
