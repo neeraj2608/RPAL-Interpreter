@@ -15,14 +15,16 @@ import com.neeraj2608.rpalinterpreter.scanner.Scanner;
  * Main driver class.
  * @author Raj
  */
-public class P2{
+public class P2 {
+
+  public static String fileName;
 
   public static void main(String[] args){
     boolean listFlag = false;
     boolean astFlag = false;
     boolean stFlag = false;
     boolean noOutFlag = false;
-    String fileName = "";
+    fileName = "";
     AST ast = null;
     
     for(String cmdOption: args){

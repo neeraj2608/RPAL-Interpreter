@@ -11,6 +11,7 @@ public class ASTNode{
   private String value;
   private ASTNode child;
   private ASTNode sibling;
+  private int sourceLineNumber;
   
   public String getName(){
     return type.name();
@@ -50,5 +51,13 @@ public class ASTNode{
 
   public ASTNode accept(NodeCopier nodeCopier){
     return nodeCopier.copy(this);
+  }
+
+  public int getSourceLineNumber(){
+    return sourceLineNumber;
+  }
+
+  public void setSourceLineNumber(int sourceLineNumber){
+    this.sourceLineNumber = sourceLineNumber;
   }
 }

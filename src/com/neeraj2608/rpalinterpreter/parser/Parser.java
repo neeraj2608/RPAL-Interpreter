@@ -106,6 +106,7 @@ public class Parser{
       if(node.getChild()!=null)
         child.setSibling(node.getChild());
       node.setChild(child);
+      node.setSourceLineNumber(child.getSourceLineNumber());
       ariness--;
     }
     stack.push(node);
@@ -115,6 +116,7 @@ public class Parser{
     ASTNode node = new ASTNode();
     node.setType(type);
     node.setValue(value);
+    node.setSourceLineNumber(currentToken.getSourceLineNumber());
     stack.push(node);
   }
   

@@ -10,6 +10,7 @@ package com.neeraj2608.rpalinterpreter.scanner;
 public class Token{
   private TokenType type;
   private String value;
+  private int sourceLineNumber;
   
   public TokenType getType(){
     return type;
@@ -25,5 +26,13 @@ public class Token{
   
   public void setValue(String value){
     this.value = value;
+  }
+
+  public int getSourceLineNumber(){
+    return sourceLineNumber;
+  }
+
+  public void setSourceLineNumber(int sourceLineNumber){
+    this.sourceLineNumber = sourceLineNumber;
   }
 }
