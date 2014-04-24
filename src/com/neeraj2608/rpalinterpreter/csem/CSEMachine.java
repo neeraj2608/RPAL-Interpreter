@@ -261,6 +261,7 @@ public class CSEMachine{
         childNode = childNode.getSibling();
       childNode.setSibling(rand2);
     }
+    rand2.setSibling(null);
 
     valueStack.push(rand1);
   }
