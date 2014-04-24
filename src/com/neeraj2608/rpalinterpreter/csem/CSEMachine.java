@@ -288,7 +288,6 @@ public class CSEMachine{
       pushFalseNode();
     else
       pushTrueNode();
-
   }
 
   private void neg(){
@@ -296,9 +295,10 @@ public class CSEMachine{
     if(rand.getType()!=ASTNodeType.INTEGER)
       throw new EvaluationException("Expecting a truthvalue; was given \""+rand.getValue()+"\"");
 
-    rand.setValue(Integer.toString(-1*Integer.parseInt(rand.getValue())));
-    valueStack.push(rand);
-
+    ASTNode result = new ASTNode();
+    result.setType(ASTNodeType.INTEGER);
+    result.setValue(Integer.toString(-1*Integer.parseInt(rand.getValue())));
+    valueStack.push(result);
   }
 
   //RULE 3
@@ -440,21 +440,31 @@ public class CSEMachine{
   private void stem(ASTNode rand){
     if(rand.getType()!=ASTNodeType.STRING)
       throw new EvaluationException("Expected a string; was given \""+rand.getValue()+"\"");
-    if(rand.getValue().length()>1)
-      rand.setValue(rand.getValue().substring(0,1));
+    
+    ASTNode result = new ASTNode();
+    result.setType(ASTNodeType.STRING);
+    
+    if(rand.getValue().isEmpty())
+      result.setValue("");
     else
-      rand.setValue("");
-    valueStack.push(rand);
+      result.setValue(rand.getValue().substring(0,1));
+    
+    valueStack.push(result);
   }
 
   private void stern(ASTNode rand){
     if(rand.getType()!=ASTNodeType.STRING)
-      throw new EvaluationException("Expected a string; was given \""+rand.getValue()+"\"");
-    if(rand.getValue().length()>1)
-      rand.setValue(rand.getValue().substring(1));
+      throw new EvaluationException("Expected a string; was given \""+rand.getValue()+"\"");    
+    
+    ASTNode result = new ASTNode();
+    result.setType(ASTNodeType.STRING);
+    
+    if(rand.getValue().isEmpty() || rand.getValue().length()==1)
+      result.setValue("");
     else
-      rand.setValue("");
-    valueStack.push(rand);
+      result.setValue(rand.getValue().substring(1));
+    
+    valueStack.push(result);
   }
 
   private void conc(ASTNode rand1, Stack<ASTNode> currentControlStack){
@@ -466,6 +476,7 @@ public class CSEMachine{
     ASTNode result = new ASTNode();
     result.setType(ASTNodeType.STRING);
     result.setValue(rand1.getValue()+rand2.getValue());
+    
     valueStack.push(result);
   }
 
@@ -473,8 +484,11 @@ public class CSEMachine{
     if(rand.getType()!=ASTNodeType.INTEGER)
       throw new EvaluationException("Expected an integer; was given \""+rand.getValue()+"\"");
 
-    rand.setType(ASTNodeType.STRING); //we store all values internally as strings, so nothing to do
-    valueStack.push(rand);
+    ASTNode result = new ASTNode();
+    result.setType(ASTNodeType.STRING);
+    result.setValue(rand.getValue());
+    
+    valueStack.push(result);
   }
 
   private void order(ASTNode rand){
@@ -484,6 +498,7 @@ public class CSEMachine{
     ASTNode result = new ASTNode();
     result.setType(ASTNodeType.INTEGER);
     result.setValue(Integer.toString(getNumChildren(rand)));
+    
     valueStack.push(result);
   }
 
@@ -546,18 +561,27 @@ public class CSEMachine{
     ASTNode childNode = null, tempNode = null;
     for(int i=0;i<numChildren;++i){
       if(childNode==null)
-        childNode = valueStack.pop();
+        childNode = copyNodeExceptSibling(valueStack.pop()); //TODO: this may be overkill
       else if(tempNode==null){
-        tempNode = valueStack.pop();
+        tempNode = copyNodeExceptSibling(valueStack.pop());
         childNode.setSibling(tempNode);
       }
       else{
-        tempNode.setSibling(valueStack.pop());
+        tempNode.setSibling(copyNodeExceptSibling(valueStack.pop()));
         tempNode = tempNode.getSibling();
       }
     }
+    tempNode.setSibling(null);
     tupleNode.setChild(childNode);
     valueStack.push(tupleNode);
+  }
+
+  private ASTNode copyNodeExceptSibling(ASTNode node){
+    ASTNode copy = new ASTNode();
+    copy.setType(node.getType());
+    copy.setChild(node.getChild());
+    copy.setValue(node.getValue());
+    return copy;
   }
 
   // RULE 8
