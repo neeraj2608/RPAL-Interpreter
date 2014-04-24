@@ -51,8 +51,8 @@ public class CSEMachine{
         case TAU:
           createTuple(node);
           break;
-        case CONDITIONAL:
-          handleConditional(node);
+        case BETA:
+          handleBeta((Beta)node, currentControlStack);
           break;
         case GAMMA:
           applyGamma(currentDelta, node, currentEnv, currentControlStack);
@@ -333,6 +333,27 @@ public class CSEMachine{
       processControlStack(nextDelta, newEnv);
       return;
     }
+    else if(rator.getType()==ASTNodeType.YSTAR){
+      //RULE 12
+      if(rand.getType()!=ASTNodeType.DELTA)
+        throw new EvaluationException("Expected a Delta; was given \""+rand.getValue()+"\"");
+      
+      Eta etaNode = new Eta();
+      etaNode.setDelta((Delta)rand);
+      valueStack.push(etaNode);
+      return;
+    }
+    else if(rator.getType()==ASTNodeType.ETA){
+      //RULE 13
+      //push back the rand, the eta and then the delta it contains
+      valueStack.push(rand);
+      valueStack.push(rator);
+      valueStack.push(((Eta)rator).getDelta());
+      //push back two gammas (one for the eta and one for the delta)
+      currentControlStack.push(node);
+      currentControlStack.push(node);
+      return;
+    }
     else if(rator.getType()==ASTNodeType.TUPLE){
       tupleSelection((Tuple)rator, rand);
       return;
@@ -540,20 +561,16 @@ public class CSEMachine{
   }
 
   // RULE 8
-  private void handleConditional(ASTNode node){
-    ASTNode conditionNode = valueStack.pop();
+  private void handleBeta(Beta node, Stack<ASTNode> currentControlStack){
+    ASTNode conditionResultNode = valueStack.pop();
 
-    if(conditionNode.getType()!=ASTNodeType.TRUE && conditionNode.getType()!=ASTNodeType.FALSE)
-      throw new EvaluationException("Expecting a truthvalue; found \""+conditionNode.getValue()+"\"");
+    if(conditionResultNode.getType()!=ASTNodeType.TRUE && conditionResultNode.getType()!=ASTNodeType.FALSE)
+      throw new EvaluationException("Expecting a truthvalue; found \""+conditionResultNode.getValue()+"\"");
 
-    if(conditionNode.getType()==ASTNodeType.TRUE){
-      ASTNode thenNode = valueStack.pop(); //discard the elseNode
-      valueStack.pop();
-      valueStack.push(thenNode);
-    }
-    else{
-      valueStack.pop(); //discard the thenNode
-    }
+    if(conditionResultNode.getType()==ASTNodeType.TRUE)
+      currentControlStack.addAll(node.getThenBody());
+    else
+      currentControlStack.addAll(node.getElseBody());
   }
 
   private int getNumChildren(ASTNode node){

@@ -7,6 +7,10 @@ import java.util.Stack;
 import com.neeraj2608.rpalinterpreter.ast.ASTNode;
 import com.neeraj2608.rpalinterpreter.ast.ASTNodeType;
 
+/**
+ * Represents a lambda closure.
+ * @author Raj
+ */
 public class Delta extends ASTNode{
   private List<String> boundVars;
   private Environment linkedEnv; //environment in effect when this Delta was pushed on to the value stack

@@ -3,8 +3,8 @@ package com.neeraj2608.rpalinterpreter.ast;
 import java.util.ArrayDeque;
 import java.util.Stack;
 
+import com.neeraj2608.rpalinterpreter.csem.Beta;
 import com.neeraj2608.rpalinterpreter.csem.Delta;
-import com.neeraj2608.rpalinterpreter.csem.Environment;
 
 /*
  * Abstract Syntax Tree: The nodes use a first-child
@@ -12,7 +12,6 @@ import com.neeraj2608.rpalinterpreter.csem.Environment;
  */
 public class AST{
   private ASTNode root;
-  private Environment currentEnv;
   private ArrayDeque<PendingDeltaBody> pendingDeltaBodyQueue;
   private boolean standardized;
   private Delta currentDelta;
@@ -320,7 +319,7 @@ public class AST{
   private void buildDeltaBody(ASTNode node, Stack<ASTNode> body){
     if(node.getType()==ASTNodeType.LAMBDA){ //create a new delta
       Delta d = createDelta(node.getChild().getSibling()); //the new delta's body starts at the right child of the lambda
-      if(node.getChild().getType()==ASTNodeType.COMMA){
+      if(node.getChild().getType()==ASTNodeType.COMMA){ //the left child of the lambda is the bound variable
         ASTNode commaNode = node.getChild();
         ASTNode childNode = commaNode.getChild();
         while(childNode!=null){
@@ -329,8 +328,27 @@ public class AST{
         }
       }
       else
-        d.addBoundVars(node.getChild().getValue()); //the left child of the lambda is the bound variable
+        d.addBoundVars(node.getChild().getValue());
       body.push(d); //add this new delta to the existing delta's body
+      return;
+    }
+    else if(node.getType()==ASTNodeType.CONDITIONAL){
+      //to enable programming order evaluation, traverse the children in reverse order so the condition leads
+      // cond -> then else becomes then else Beta cond
+      ASTNode conditionNode = node.getChild();
+      ASTNode thenNode = conditionNode.getSibling();
+      ASTNode elseNode = thenNode.getSibling();
+      
+      //Add a Beta node.
+      Beta betaNode = new Beta();
+      
+      buildDeltaBody(thenNode, betaNode.getThenBody());
+      buildDeltaBody(elseNode, betaNode.getElseBody());
+      
+      body.push(betaNode);
+      
+      buildDeltaBody(conditionNode, body);
+      
       return;
     }
     

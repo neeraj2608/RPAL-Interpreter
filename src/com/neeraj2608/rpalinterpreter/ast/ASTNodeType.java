@@ -61,8 +61,10 @@ public enum ASTNodeType{
   //Post-standardize
   YSTAR("<Y*>"),
   
-  //For evaluation
+  //For program evaluation only. Will never appear in a standardized or non-standardized AST. 
+  BETA(""),
   DELTA(""),
+  ETA(""),
   TUPLE(""),
   PRINT("");
   
