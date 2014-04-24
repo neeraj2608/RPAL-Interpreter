@@ -61,8 +61,7 @@ jar: all
 
 # example usage: `make test`
 test: all
-	./difftest.pl -1 "./rpal FILE" -2 "java P2 FILE" -t ~/rpal/tests/
-#	./difftest.pl -1 "./rpal -st -noout FILE" -2 "java P2 -st -noout FILE" -t ~/rpal/tests/
+	./difftest.pl -1 "./rpal -st FILE" -2 "java P2 -st FILE" -t ~/rpal/tests/
 #./difftest.pl -1 "./rpal -ast -noout FILE" -2 "java P1 -ast -noout FILE" -t ~/rpal/tests/
 
 dirs:
@@ -73,6 +72,7 @@ cl: clean
 clean:
 	@rm -rf com
 	@rm -f P1.class
+	@rm -f P2.class
 	@rm -f *.jar
 	@rm -fr diffresult
 #@rm -fr $(CLASSDIR) #need only this when CLASSDIR = class (and NOT pwd)
