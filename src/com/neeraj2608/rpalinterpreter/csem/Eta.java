@@ -18,6 +18,10 @@ public class Eta extends ASTNode{
   public Eta(){
     setType(ASTNodeType.ETA);
   }
+  
+  public Eta accept(NodeCopier nodeCopier){
+    return nodeCopier.copy(this);
+  }
 
   public Delta getDelta(){
     return delta;

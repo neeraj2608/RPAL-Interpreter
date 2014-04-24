@@ -1,5 +1,7 @@
 package com.neeraj2608.rpalinterpreter.ast;
 
+import com.neeraj2608.rpalinterpreter.csem.NodeCopier;
+
 /**
  * Abstract Syntax Tree node. Uses a first-child, next-sibling representation.
  * @author Raj
@@ -44,5 +46,9 @@ public class ASTNode{
 
   public void setValue(String value){
     this.value = value;
+  }
+
+  public ASTNode accept(NodeCopier nodeCopier){
+    return nodeCopier.copy(this);
   }
 }

@@ -23,4 +23,9 @@ public class Tuple extends ASTNode{
     printValue += childNode.getValue() + ")";
     return printValue;
   }
+  
+  public Tuple accept(NodeCopier nodeCopier){
+    return nodeCopier.copy(this);
+  }
+  
 }

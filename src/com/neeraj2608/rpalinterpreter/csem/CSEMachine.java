@@ -441,30 +441,24 @@ public class CSEMachine{
     if(rand.getType()!=ASTNodeType.STRING)
       throw new EvaluationException("Expected a string; was given \""+rand.getValue()+"\"");
     
-    ASTNode result = new ASTNode();
-    result.setType(ASTNodeType.STRING);
-    
     if(rand.getValue().isEmpty())
-      result.setValue("");
+      rand.setValue("");
     else
-      result.setValue(rand.getValue().substring(0,1));
+      rand.setValue(rand.getValue().substring(0,1));
     
-    valueStack.push(result);
+    valueStack.push(rand);
   }
 
   private void stern(ASTNode rand){
     if(rand.getType()!=ASTNodeType.STRING)
-      throw new EvaluationException("Expected a string; was given \""+rand.getValue()+"\"");    
-    
-    ASTNode result = new ASTNode();
-    result.setType(ASTNodeType.STRING);
+      throw new EvaluationException("Expected a string; was given \""+rand.getValue()+"\"");
     
     if(rand.getValue().isEmpty() || rand.getValue().length()==1)
-      result.setValue("");
+      rand.setValue("");
     else
-      result.setValue(rand.getValue().substring(1));
+      rand.setValue(rand.getValue().substring(1));
     
-    valueStack.push(result);
+    valueStack.push(rand);
   }
 
   private void conc(ASTNode rand1, Stack<ASTNode> currentControlStack){
@@ -483,12 +477,9 @@ public class CSEMachine{
   private void itos(ASTNode rand){
     if(rand.getType()!=ASTNodeType.INTEGER)
       throw new EvaluationException("Expected an integer; was given \""+rand.getValue()+"\"");
-
-    ASTNode result = new ASTNode();
-    result.setType(ASTNodeType.STRING);
-    result.setValue(rand.getValue());
     
-    valueStack.push(result);
+    rand.setType(ASTNodeType.STRING); //all values are stored internally as strings, so nothing else to do
+    valueStack.push(rand);
   }
 
   private void order(ASTNode rand){
@@ -561,27 +552,19 @@ public class CSEMachine{
     ASTNode childNode = null, tempNode = null;
     for(int i=0;i<numChildren;++i){
       if(childNode==null)
-        childNode = copyNodeExceptSibling(valueStack.pop()); //TODO: this may be overkill
+        childNode = valueStack.pop();
       else if(tempNode==null){
-        tempNode = copyNodeExceptSibling(valueStack.pop());
+        tempNode = valueStack.pop();
         childNode.setSibling(tempNode);
       }
       else{
-        tempNode.setSibling(copyNodeExceptSibling(valueStack.pop()));
+        tempNode.setSibling(valueStack.pop());
         tempNode = tempNode.getSibling();
       }
     }
     tempNode.setSibling(null);
     tupleNode.setChild(childNode);
     valueStack.push(tupleNode);
-  }
-
-  private ASTNode copyNodeExceptSibling(ASTNode node){
-    ASTNode copy = new ASTNode();
-    copy.setType(node.getType());
-    copy.setChild(node.getChild());
-    copy.setValue(node.getValue());
-    return copy;
   }
 
   // RULE 8

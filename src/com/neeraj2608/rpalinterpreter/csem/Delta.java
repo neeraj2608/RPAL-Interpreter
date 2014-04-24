@@ -22,6 +22,10 @@ public class Delta extends ASTNode{
     boundVars = new ArrayList<String>();
   }
   
+  public Delta accept(NodeCopier nodeCopier){
+    return nodeCopier.copy(this);
+  }
+  
   //used if the program evaluation results in a partial application
   @Override
   public String getValue(){
@@ -36,12 +40,20 @@ public class Delta extends ASTNode{
     boundVars.add(boundVar);
   }
   
+  public void setBoundVars(List<String> boundVars){
+    this.boundVars = boundVars;
+  }
+  
   public Stack<ASTNode> getBody(){
     return body;
   }
   
   public void setBody(Stack<ASTNode> body){
     this.body = body;
+  }
+  
+  public int getIndex(){
+    return index;
   }
 
   public void setIndex(int index){
