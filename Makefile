@@ -24,6 +24,8 @@ SOURCEFILES := \
                com/neeraj2608/rpalinterpreter/csem/EvaluationException.java \
                com/neeraj2608/rpalinterpreter/csem/Environment.java \
                com/neeraj2608/rpalinterpreter/csem/Delta.java \
+               com/neeraj2608/rpalinterpreter/csem/Beta.java \
+               com/neeraj2608/rpalinterpreter/csem/Eta.java \
                com/neeraj2608/rpalinterpreter/ast/AST.java \
                com/neeraj2608/rpalinterpreter/csem/Tuple.java \
                com/neeraj2608/rpalinterpreter/csem/CSEMachine.java \
