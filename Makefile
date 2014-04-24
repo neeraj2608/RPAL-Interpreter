@@ -10,28 +10,28 @@ SRCDIR = src
 
 $(CLASSDIR)/%.class : $(SRCDIR)/%.java
 	@echo -n ">>> Compiling $@..."
-	@$(JC) $(JFLAGS) -cp $(CLASSDIR) -d $(CLASSDIR) $<
+	@$(JC) $(JFLAGS) -sourcepath $(SRCDIR) -cp $(CLASSDIR) -d $(CLASSDIR) $<
 	@echo " done."
 
 SOURCEFILES := \
-               com/neeraj2608/rpalinterpreter/scanner/TokenType.java \
-               com/neeraj2608/rpalinterpreter/scanner/Token.java \
-               com/neeraj2608/rpalinterpreter/scanner/LexicalRegexPatterns.java \
-               com/neeraj2608/rpalinterpreter/scanner/Scanner.java \
-               com/neeraj2608/rpalinterpreter/ast/StandardizeException.java \
-               com/neeraj2608/rpalinterpreter/ast/ASTNodeType.java \
+               com/neeraj2608/rpalinterpreter/ast/AST.java \
                com/neeraj2608/rpalinterpreter/ast/ASTNode.java \
+               com/neeraj2608/rpalinterpreter/ast/ASTNodeType.java \
+               com/neeraj2608/rpalinterpreter/ast/StandardizeException.java \
+               com/neeraj2608/rpalinterpreter/csem/Beta.java \
+               com/neeraj2608/rpalinterpreter/csem/CSEMachine.java \
+               com/neeraj2608/rpalinterpreter/csem/Delta.java \
+               com/neeraj2608/rpalinterpreter/csem/Environment.java \
+               com/neeraj2608/rpalinterpreter/csem/Eta.java \
                com/neeraj2608/rpalinterpreter/csem/EvaluationException.java \
                com/neeraj2608/rpalinterpreter/csem/NodeCopier.java \
-               com/neeraj2608/rpalinterpreter/csem/Environment.java \
-               com/neeraj2608/rpalinterpreter/csem/Delta.java \
-               com/neeraj2608/rpalinterpreter/csem/Beta.java \
-               com/neeraj2608/rpalinterpreter/csem/Eta.java \
                com/neeraj2608/rpalinterpreter/csem/Tuple.java \
-               com/neeraj2608/rpalinterpreter/ast/AST.java \
-               com/neeraj2608/rpalinterpreter/csem/CSEMachine.java \
                com/neeraj2608/rpalinterpreter/parser/ParseException.java \
                com/neeraj2608/rpalinterpreter/parser/Parser.java \
+               com/neeraj2608/rpalinterpreter/scanner/LexicalRegexPatterns.java \
+               com/neeraj2608/rpalinterpreter/scanner/Scanner.java \
+               com/neeraj2608/rpalinterpreter/scanner/Token.java \
+               com/neeraj2608/rpalinterpreter/scanner/TokenType.java \
                P1.java \
                P2.java \
 
