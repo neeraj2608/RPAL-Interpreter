@@ -28,7 +28,11 @@ public class P2 {
     AST ast = null;
     
     for(String cmdOption: args){
-      if(cmdOption.equals("-l"))
+      if(cmdOption.equals("-help")){
+        printHelp();
+        return;
+      }
+      else if(cmdOption.equals("-l"))
         listFlag = true;
       else if(cmdOption.equals("-ast"))
         astFlag = true;
@@ -50,13 +54,13 @@ public class P2 {
     
     if(listFlag){
       if(fileName.isEmpty())
-        throw new ParseException("Please specify a file. Call P1 with -help to see examples");
+        throw new ParseException("Please specify a file. Call P2 with -help to see examples");
       printInputListing(fileName);
     }
     
     if(astFlag){
       if(fileName.isEmpty())
-        throw new ParseException("Please specify a file. Call P1 with -help to see examples");
+        throw new ParseException("Please specify a file. Call P2 with -help to see examples");
       ast = buildAST(fileName, true);
       printAST(ast);
       if(noOutFlag)
@@ -67,7 +71,7 @@ public class P2 {
     
     if(stFlag){
       if(fileName.isEmpty())
-        throw new ParseException("Please specify a file. Call P1 with -help to see examples");
+        throw new ParseException("Please specify a file. Call P2 with -help to see examples");
       ast = buildAST(fileName, true);
       ast.standardize();
       printAST(ast);
@@ -79,7 +83,7 @@ public class P2 {
     //-noout without -ast or -st produces no output
     if(noOutFlag && (!astFlag || !stFlag)){
       if(fileName.isEmpty())
-        throw new ParseException("Please specify a file. Call P1 with -help to see examples");
+        throw new ParseException("Please specify a file. Call P2 with -help to see examples");
     }
    
   }
@@ -124,6 +128,18 @@ public class P2 {
 
   private static void printAST(AST ast){
     ast.print();
+  }
+
+  private static void printHelp(){
+    System.out.println("Usage: java P2 [OPTIONS] FILE");
+    System.out.println("Without any switches, prints only the result of evaluating the program");
+    System.out.println("  -ast: prints the abstract syntax tree generated followed by the result");
+    System.out.println("        of evaluating the program");
+    System.out.println("        with -noout, prints only the abstract syntax tree generated");
+    System.out.println("   -st: prints the standardized syntax tree generated followed by the result");
+    System.out.println("        of evaluating the program");
+    System.out.println("        with -noout, prints only the standardized syntax tree generated");
+    System.out.println("    -l: prints the source code listing");
   }
 
 }
