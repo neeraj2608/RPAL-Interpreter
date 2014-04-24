@@ -85,6 +85,7 @@ public class P2{
   private static void evaluateST(AST ast){
     CSEMachine csem = new CSEMachine(ast);
     csem.evaluateProgram();
+    System.out.println();
   }
 
   private static void printInputListing(String fileName){
