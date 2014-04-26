@@ -11,4 +11,4 @@ then
   cd $PWD
 fi;
 
-java -cp $DIR P2 $1 $2 $3
+java -cp $DIR com.neeraj2608.rpalinterpreter.driver.P2 $1 $2 $3
