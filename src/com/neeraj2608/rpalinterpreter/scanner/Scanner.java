@@ -18,11 +18,9 @@ public class Scanner{
   private final List<String> reservedIdentifiers = Arrays.asList(new String[]{"let","in","within","fn","where","aug","or",
                                                                               "not","gr","ge","ls","le","eq","ne","true",
                                                                               "false","nil","dummy","rec","and"});
-  public static String fileName;
   private int sourceLineNumber;
   
   public Scanner(String inputFile) throws IOException{
-    fileName = inputFile;
     sourceLineNumber = 1;
     buffer = new BufferedReader(new InputStreamReader(new FileInputStream(new File(inputFile))));
   }
