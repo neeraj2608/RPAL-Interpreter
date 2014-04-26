@@ -14,7 +14,7 @@ This system implements the following features (the modules responsible are given
 
 | Features | Module |
 | --------------|------------|
-|Parse a source file in accordance with RPAL's [phrase structure grammar (PDF)](http://www.cise.ufl.edu/class/cop5555sp14/rpal/rpal.grammar.pdf)|Scanner|
+|Recursive-Descent parse a source file in accordance with RPAL's [phrase structure grammar (PDF)](http://www.cise.ufl.edu/class/cop5555sp14/rpal/rpal.grammar.pdf)|Scanner|
 |Create an abstract syntax tree | Parser |
 |Standardize the abstract syntax tree | Parser |
 |Execute the program by processing the standardized syntax tree in a Control-Stack-Execution Machine (CSEM). The CSEM manages the overhead of creating lambda closures including managing nested environments for those closures, providing basic functionality such as arithmetic or logical operations on RPAL data types etc. | Control Stack Execution Machine |
